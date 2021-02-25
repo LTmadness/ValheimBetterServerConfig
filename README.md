@@ -13,10 +13,12 @@ I usualy code in Java so please don't judge me too much for my c# skills :D also
 If you would like to support me you can do it here: https://streamlabs.com/ltmadness/tip
 
 ### FAQ
-Where  to find server config?:
-\Valheim dedicated server\BepInEx\config\org.ltmadness.valheim.betterserverconfig.cfg
+<b>Where  to find server config?:</b>
 
-Do I need anything else to use it?
+Valheim dedicated server\BepInEx\config\org.ltmadness.valheim.betterserverconfig.cfg
+
+<b>Do I need anything else to use it?</b>
+
 Yes, you need BepInEx, to install simple drop the ValheimBetterServerConfig.dll into BeopInEx/plugins,
 Config file will be generated after first server start
 
