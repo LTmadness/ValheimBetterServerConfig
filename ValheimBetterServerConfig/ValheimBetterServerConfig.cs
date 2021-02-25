@@ -74,6 +74,7 @@ namespace ValheimBetterServerConfig
         [HarmonyPrefix]
         public static bool IsPublicPasswordValid_redirect(string password, World world, ref bool __result)
         {
+            
             __result = validator.isPasswordValid(password, world, config.getServerName());
             return false; 
         }

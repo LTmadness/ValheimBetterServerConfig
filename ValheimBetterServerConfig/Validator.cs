@@ -15,7 +15,15 @@ namespace ValheimBetterServerConfig
 
         public bool isPasswordValid(String password, World world, string serverName)
         {
-            return !(world.m_name.Contains(password) || world.m_seedName.Contains(password) || serverName.Contains(password));
+            if (!password.Equals(""))
+            {
+                return !(world.m_name.Contains(password) || world.m_seedName.Contains(password) || serverName.Contains(password));
+            }
+            else
+            {
+                return true;
+            }
+               
         }
 
     }
