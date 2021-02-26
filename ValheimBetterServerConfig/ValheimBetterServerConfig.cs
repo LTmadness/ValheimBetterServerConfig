@@ -137,7 +137,7 @@ namespace ValheimBetterServerConfig
             SteamGameServer.EnableHeartbeats(true);
 
             ZLog.Log("Registering lobby (advanced)");
-            return false;*/
-        }
+            return false;
+        }*/
     }
 }
