@@ -34,6 +34,9 @@
     <Reference Include="0Harmony">
       <HintPath>..\Libraries\0Harmony.dll</HintPath>
     </Reference>
+    <Reference Include="assembly_steamworks">
+      <HintPath>..\Libraries\assembly_steamworks.dll</HintPath>
+    </Reference>
     <Reference Include="assembly_utils">
       <HintPath>..\Libraries\assembly_utils.dll</HintPath>
     </Reference>
@@ -57,10 +60,13 @@
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\Libraries\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\Libraries\UnityEngine.UI.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Validator.cs" />
-    <Compile Include="ConfigHelper.cs" />
+    <Compile Include="Helper.cs" />
+    <Compile Include="ConfigTool.cs" />
     <Compile Include="ValheimBetterServerConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
