@@ -1,4 +1,5 @@
 ﻿using System;
+using BepInEx;
 
 namespace ValheimBetterServerConfig
 {
@@ -23,8 +24,6 @@ namespace ValheimBetterServerConfig
             {
                 return true;
             }
-               
         }
-
     }
 }

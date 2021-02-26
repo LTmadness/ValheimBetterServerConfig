@@ -1,6 +1,4 @@
-﻿using BepInEx;
-using BepInEx.Configuration;
-using BepInEx.Logging;
+﻿using BepInEx.Configuration;
 
 namespace ValheimBetterServerConfig
 {
@@ -34,15 +32,16 @@ namespace ValheimBetterServerConfig
         public void loadConfig()
         {
             //default settings
-            serverName = config.AddSetting(DEFAULT_SETTINGS, "Server name", "My Server Name", "Server name, please change");
+            serverName = config.AddSetting(DEFAULT_SETTINGS, "Server name", "My Server Name", "Server name, please change, if deleted will say \"Server Name\"");
             serverPort = config.AddSetting<int>(DEFAULT_SETTINGS, "Server Port", 2456);
             worldName = config.AddSetting(DEFAULT_SETTINGS, "World Name", "ServerWorld", "World name, please change");
             password = config.AddSetting(DEFAULT_SETTINGS, "Server password", "changeMe", "server password, please change");
-            publiclyVisable = config.AddSetting(DEFAULT_SETTINGS, "Server publicly visable", false, "Change me if you want your server to apear in server list");
             saveLocation = config.AddSetting(DEFAULT_SETTINGS, "Save location", "", "Server data save location");
 
             //advanced settings
-            serverSize = config.AddSetting(ADVANCED_SETTINGS, "Server size", 10, "Number of players allowed in the server");
+            publiclyVisable = config.AddSetting(DEFAULT_SETTINGS, "Server publicly visable", true, "Change me if you want your server to apear in server list");
+            serverSize = config.AddSetting(ADVANCED_SETTINGS, "Server size", 10, "Number of players allowed in the server, minimum 1");
+
             config.Save();
         }
 
