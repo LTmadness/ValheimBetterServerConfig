@@ -65,8 +65,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Validator.cs" />
-    <Compile Include="ConfigHelper.cs" />
+    <Compile Include="Helper.cs" />
+    <Compile Include="ConfigTool.cs" />
     <Compile Include="ValheimBetterServerConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
