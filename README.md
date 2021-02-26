@@ -23,14 +23,14 @@ Yes, you need BepInEx, to install simple drop the ValheimBetterServerConfig.dll 
 Config file will be generated after first server start
 
 ### Changes
-v0.0.2
+##### v0.0.2
 * steam lobby server size option
 * easy server name color change by choosing color in config (any color form: https://www.w3schools.com/colors/colors_names.asp)
 * easy way to set serve name to be displayed in italic
 * easy way to set server name to be displayed in bold
 * option to change steam map name to whatever you like separate from your world name
 * small fixes
-v0.0.1 
+##### v0.0.1 
 * Can change server name from mod config
 * Wold name and server port option included in mod config
 * Option to choose where server is saved
