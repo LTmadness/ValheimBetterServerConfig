@@ -1,6 +1,8 @@
 ﻿using HarmonyLib;
 using System;
 using System.Collections.Generic;
+using BepInEx;
+using UnityEngine;
 
 namespace ValheimBetterServerConfig
 {
@@ -36,51 +38,157 @@ namespace ValheimBetterServerConfig
                 print("unban [ip/userID] - unban user");
                 print("banned - list banned users");
                 print("permit [ip/userID] - add user to permitted user list");
-                //print("unpermit [ip/userID] - remove user from permitted user list");
+                print("unpermit [ip/userID] - remove user from permitted user list");
                 print("permitted - list permitted users");
+                print("addAdmin [userID] - add user to admin list");
+                print("removeAdmin [userID] - remove user from admin list");
+                print("admins - list of admin user ids");
+                print("save - save server");
+                print("difficulty [nr] - force difficulty");
+                print("randomevent - starts random event");
+                print("stopevent - stop current event");
+                print("tod -1 or e.g. 0.75 - change time of day (between 0 an 1) or turn of debug mode(-1)");
             }
             else
             {
-                if (text.StartsWith("kick "))
+                if (text.ToLower().StartsWith("kick "))
                 {
                     string user = text.Substring(5);
                     Kick(user);
                     return;
                 }
-                if (text.StartsWith("ban "))
+
+                if (text.ToLower().StartsWith("ban "))
                 {
                     string user = text.Substring(4);
                     Ban(user);
                     return;
                 }
-                if (text.StartsWith("unban "))
+
+                if (text.ToLower().StartsWith("unban "))
                 {
                     string user = text.Substring(6);
                     Unban(user);
                     return;
                 }
-                if (text.StartsWith("banned"))
+
+                if (text.ToLower().StartsWith("banned"))
                 {
                     printBanned();
                     return;
                 }
-                if (text.StartsWith("permitted"))
+
+                if (text.ToLower().StartsWith("permitted"))
                 {
                     printPermitted();
                     return;
                 }
-                if(text.StartsWith("permit "))
+
+                if (text.ToLower().StartsWith("permit "))
                 {
                     string user = text.Substring(7);
                     Permit(user);
                     return;
                 }
-                /*if(text.StartsWith("unpermit "))
+
+                if (text.ToLower().StartsWith("unpermit "))
                 {
-                    string user = text.Substring(7);
+                    string user = text.Substring(9);
                     UnPermit(user);
                     return;
-                }*/
+                }
+
+                if (text.ToLower().StartsWith("addadmin "))
+                {
+                    string user = text.Substring(9);
+                    AddAdmin(user);
+                    return;
+                }
+
+                if (text.ToLower().StartsWith("removeadmin "))
+                {
+                    string user = text.Substring(12);
+                    RemoveAdmin(user);
+                    return;
+                }
+
+                if (text.ToLower().StartsWith("admins"))
+                {
+                    printAdmins();
+                    return;
+                }
+
+                if (text.ToLower().StartsWith("save"))
+                {
+                    zNet.Save(false);
+                    return;
+                }
+
+                if (text.ToLower().StartsWith("difficulty "))
+                {
+                    int num = 0;
+                    try
+                    {
+                        num = int.Parse(text.Substring(11));
+                    }
+                    catch
+                    {
+                        print("Number was incorrect");
+                        return;
+                    }
+
+                    if (num >= 1) 
+                    { 
+                        Game.instance.SetForcePlayerDifficulty(num);
+                        print("Setting players to " + num);
+                        return;
+                    }
+                }
+
+                if (text.ToLower().StartsWith("memory"))
+                {
+                    long totalMemory = GC.GetTotalMemory(false);
+                    print("Total allocated mem: " + (totalMemory / 1048576L).ToString("0") + "mb");
+                    return;
+                }
+
+                if (text.ToLower().StartsWith("randomevent"))
+                {
+                    RandEventSystem.instance.StartRandomEvent();
+                    return;
+                }
+
+                if (text.ToLower().StartsWith("stopevent"))
+                {
+                    RandEventSystem.instance.ResetRandomEvent();
+                    return;
+                }
+
+                if (text.ToLower().StartsWith("tod "))
+                {
+                    float num = 0;
+                    try
+                    {
+                        num = float.Parse(text.Substring(4));
+                    }
+                    catch
+                    {
+                        print("The time of day was incorrect");
+                        return;
+                    }
+                    print("Setting time of day:" + num);
+                    if (num < 0f)
+                    {
+                        EnvMan.instance.m_debugTimeOfDay = false;
+                    }
+                    else
+                    {
+                        EnvMan.instance.m_debugTimeOfDay = true;
+                        EnvMan.instance.m_debugTime = Mathf.Clamp01(num);
+                    }
+                    return;
+                }
+
             }
         }
 
@@ -91,7 +199,7 @@ namespace ValheimBetterServerConfig
 
         private void Kick(string user)
         {
-            if (user == "")
+            if (user.IsNullOrWhiteSpace())
             {
                 print("No user found");
                 return;
@@ -109,7 +217,7 @@ namespace ValheimBetterServerConfig
         }
         private void Ban(string user)
         {
-            if (user == "")
+            if (user.IsNullOrWhiteSpace())
             {
                 return;
             }
@@ -126,7 +234,7 @@ namespace ValheimBetterServerConfig
 
         private void Unban(string user)
         {
-            if (user == "")
+            if (user.IsNullOrWhiteSpace())
             {
                 return;
             }
@@ -151,9 +259,14 @@ namespace ValheimBetterServerConfig
 
         private void Permit(string user)
         {
-            if (user == "")
+            if (user.IsNullOrWhiteSpace())
             {
                 return;
+            }
+            ZNetPeer peerByPlayerName = zNet.GetPeerByPlayerName(user);
+            if (peerByPlayerName != null)
+            {
+                user = peerByPlayerName.m_socket.GetHostName();
             }
             print("Permitting user " + user);
             SyncedList permittedPlayers = (SyncedList)AccessTools.Field(typeof(ZNet), "m_permittedList").GetValue(zNet);
@@ -163,7 +276,7 @@ namespace ValheimBetterServerConfig
 
         private void UnPermit(string user)
         {
-            if (user == "")
+            if (user.IsNullOrWhiteSpace())
             {
                 return;
             }
@@ -171,6 +284,40 @@ namespace ValheimBetterServerConfig
             SyncedList permittedPlayers = (SyncedList)AccessTools.Field(typeof(ZNet), "m_permittedList").GetValue(zNet);
             permittedPlayers.Remove(user);
             AccessTools.Field(typeof(ZNet), "m_permittedList").SetValue(zNet, permittedPlayers);
+        }
+
+        private void AddAdmin(string user)
+        {
+            if (user.IsNullOrWhiteSpace())
+            {
+                return;
+            }
+            ZNetPeer peerByPlayerName = zNet.GetPeerByPlayerName(user);
+            if (peerByPlayerName != null)
+            {
+                user = peerByPlayerName.m_socket.GetHostName();
+            }
+            print("Adding player to the admin list:" + user);
+            SyncedList adminList = (SyncedList)AccessTools.Field(typeof(ZNet), "m_adminList").GetValue(zNet);
+            adminList.Add(user);
+            AccessTools.Field(typeof(ZNet), "m_adminList").SetValue(zNet, adminList);
+        }
+
+        private void RemoveAdmin(string user)
+        {
+            if (user.IsNullOrWhiteSpace())
+            {
+                return;
+            }
+            ZNetPeer peerByPlayerName = zNet.GetPeerByPlayerName(user);
+            if (peerByPlayerName != null)
+            {
+                user = peerByPlayerName.m_socket.GetHostName();
+            }
+            print("Removing player from the admin list:" + user);
+            SyncedList adminList = (SyncedList)AccessTools.Field(typeof(ZNet), "m_adminList").GetValue(zNet);
+            adminList.Remove(user);
+            AccessTools.Field(typeof(ZNet), "m_adminList").SetValue(zNet, adminList);
         }
 
         private void SendDisconnect(ZNetPeer peer)
@@ -184,7 +331,7 @@ namespace ValheimBetterServerConfig
 
         private void printBanned()
         {
-            print("Ban player steam ids:");
+            print("Ban player steam IDs/IPs:");
             SyncedList ids = (SyncedList) AccessTools.Field(typeof(ZNet), "m_bannedList").GetValue(zNet);
             List<string> idList = ids.GetList();
             foreach(string id in idList)
@@ -195,8 +342,19 @@ namespace ValheimBetterServerConfig
 
         private void printPermitted()
         {
-            print("Permited player steam ids:");
+            print("Permited player steam IDs/IPs:");
             SyncedList ids = (SyncedList)AccessTools.Field(typeof(ZNet), "m_permittedList").GetValue(zNet);
+            List<string> idList = ids.GetList();
+            foreach (string id in idList)
+            {
+                print(id);
+            }
+        }
+
+        private void printAdmins()
+        {
+            print("Admin ids:");
+            SyncedList ids = (SyncedList)AccessTools.Field(typeof(ZNet), "m_adminList").GetValue(zNet);
             List<string> idList = ids.GetList();
             foreach (string id in idList)
             {

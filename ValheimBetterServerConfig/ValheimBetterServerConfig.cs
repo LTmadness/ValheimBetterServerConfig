@@ -1,10 +1,6 @@
 ﻿using BepInEx;
 using HarmonyLib;
 using Steamworks;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,7 +14,7 @@ namespace ValheimBetterServerConfig
     {
         public const string GUID = "org.ltmadness.valheim.betterserverconfig";
         public const string NAME = "Better Server Config";
-        public const string VERSION = "0.0.30";
+        public const string VERSION = "0.0.40";
 
         private static ValheimBetterServerConfig m_instance;
 
@@ -51,11 +47,6 @@ namespace ValheimBetterServerConfig
             MethodInfo patchParseServerArguments = AccessTools.Method(typeof(ValheimBetterServerConfig), "ParseServerArguments_modded");
             harmony.Patch(originParseServerArguments, new HarmonyMethod(patchParseServerArguments));
 
-            //seting server private and size not supported by Valheim??????
-            /*MethodInfo originAwakeZNet = AccessTools.Method(typeof(ZNet), "Awake");
-            MethodInfo patchAwakeZNet = AccessTools.Method(typeof(ValheimBetterServerConfig), "Awake_modded");
-            harmony.Patch(originAwakeZNet, new HarmonyMethod(patchAwakeZNet));*/
-
             MethodInfo originRegisterServer = AccessTools.Method(typeof(ZSteamMatchmaking), "RegisterServer");
             MethodInfo patchRegisterServer = AccessTools.Method(typeof(ValheimBetterServerConfig), "RegisterServer_modded");
             harmony.Patch(originRegisterServer, new HarmonyMethod(patchRegisterServer));
@@ -66,7 +57,7 @@ namespace ValheimBetterServerConfig
 
             Task.Run(async () =>
             {
-                while (true)
+                while(true)
                 {
                     if (console.getZNet() != null)
                     {
