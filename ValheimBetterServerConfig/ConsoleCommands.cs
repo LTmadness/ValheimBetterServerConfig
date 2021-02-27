@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using BepInEx;
-using UnityEngine;
 
 namespace ValheimBetterServerConfig
 {
@@ -45,9 +44,6 @@ namespace ValheimBetterServerConfig
                 print("admins - list of admin user ids");
                 print("save - save server");
                 print("difficulty [nr] - force difficulty");
-                print("randomevent - starts random event");
-                print("stopevent - stop current event");
-                print("tod -1 or e.g. 0.75 - change time of day (between 0 an 1) or turn of debug mode(-1)");
             }
             else
             {
@@ -152,47 +148,10 @@ namespace ValheimBetterServerConfig
                     return;
                 }
 
-                if (text.ToLower().StartsWith("randomevent"))
-                {
-                    RandEventSystem.instance.StartRandomEvent();
-                    return;
-                }
-
-                if (text.ToLower().StartsWith("stopevent"))
-                {
-                    RandEventSystem.instance.ResetRandomEvent();
-                    return;
-                }
-
-                if (text.ToLower().StartsWith("tod "))
-                {
-                    float num = 0;
-                    try
-                    {
-                        num = float.Parse(text.Substring(4));
-                    }
-                    catch
-                    {
-                        print("The time of day was incorrect");
-                        return;
-                    }
-                    print("Setting time of day:" + num);
-                    if (num < 0f)
-                    {
-                        EnvMan.instance.m_debugTimeOfDay = false;
-                    }
-                    else
-                    {
-                        EnvMan.instance.m_debugTimeOfDay = true;
-                        EnvMan.instance.m_debugTime = Mathf.Clamp01(num);
-                    }
-                    return;
-                }
-
             }
         }
 
-        private static void print(string text)
+        public static void print(string text)
         {
             System.Console.WriteLine(text);
         }

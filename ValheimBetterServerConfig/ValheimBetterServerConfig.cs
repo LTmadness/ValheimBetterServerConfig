@@ -1,6 +1,8 @@
 ﻿using BepInEx;
 using HarmonyLib;
 using Steamworks;
+using System;
+using System.Net;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +17,9 @@ namespace ValheimBetterServerConfig
         public const string GUID = "org.ltmadness.valheim.betterserverconfig";
         public const string NAME = "Better Server Config";
         public const string VERSION = "0.0.40";
+        private static string newestVersion;
+        private static string Repository = "https://https://github.com/LTmadness/ValheimBetterServerConfig";
+        private static string ApiRepository = "https://github.com/LTmadness/ValheimBetterServerConfig/tags";
 
         private static ValheimBetterServerConfig m_instance;
 
@@ -70,10 +75,35 @@ namespace ValheimBetterServerConfig
                     }
                 }
             });
+            if (!isUpToDate())
+            {
+                Console.print("New BetterServerConfig version available - ");
+            }
         }
 
-        [HarmonyPatch(typeof(FejdStartup), "ParseServerArguments")]
-        [HarmonyPrefix]
+        public static bool isUpToDate()
+        {
+            WebClient client = new WebClient();
+            client.Headers.Add("User-Agent: V+ Server");
+            string reply;
+            try
+            {
+                reply = client.DownloadString(ApiRepository);
+                newestVersion = reply.Split(new[] { "," }, StringSplitOptions.None)[0].Trim().Replace("\"", "").Replace("[{name:", "");
+            }
+            catch
+            {
+                Debug.Log("The newest version could not be determined.");
+                newestVersion = "";
+            }
+
+            if (newestVersion.Equals(VERSION))
+            {
+                return true;
+            }
+            return false;
+        }
+
         public static bool ParseServerArguments_modded(FejdStartup __instance, ref bool __result)
         {
             __instance.m_minimumPasswordLength = -1;
@@ -110,8 +140,6 @@ namespace ValheimBetterServerConfig
             return false;
         }
 
-        [HarmonyPatch(typeof(FejdStartup), "IsPublicPasswordValid")]
-        [HarmonyPrefix]
         public static bool IsPublicPasswordValid_modded(string password, World world, ref bool __result)
         {
 
@@ -124,9 +152,6 @@ namespace ValheimBetterServerConfig
             console.setZNet(__instance);
         }
 
-
-        [HarmonyPatch(typeof(ZSteamMatchmaking), "RegisterServer")]
-        [HarmonyPrefix]
         public static bool RegisterServer_modded(string name, bool password, string version, bool publicServer, string worldName,
             ZSteamMatchmaking __instance)
         {
