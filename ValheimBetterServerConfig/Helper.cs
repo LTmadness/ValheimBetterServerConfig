@@ -48,16 +48,9 @@ namespace ValheimBetterServerConfig
 
         public string setColor(string text, string color)
         {
-            Random random = new Random();
             if (color.ToUpper().Contains("RANDOM"))
             {
-                string result = "";
-                foreach (char letter in text)
-                {
-                    result += "<color=" + randomColor(random) + ">" + letter + "</color>";
-                }
-
-                return result;
+                return  "<color=" + randomColor(new Random()) + ">" + text + "</color>";
             }
 
             return "<color=" + color.ToUpper() + ">" + text + "</color>";

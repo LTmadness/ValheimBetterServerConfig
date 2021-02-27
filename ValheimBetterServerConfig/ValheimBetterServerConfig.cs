@@ -1,7 +1,13 @@
 ﻿using BepInEx;
 using HarmonyLib;
 using Steamworks;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace ValheimBetterServerConfig
@@ -12,12 +18,13 @@ namespace ValheimBetterServerConfig
     {
         public const string GUID = "org.ltmadness.valheim.betterserverconfig";
         public const string NAME = "Better Server Config";
-        public const string VERSION = "0.0.2";
+        public const string VERSION = "0.0.30";
 
         private static ValheimBetterServerConfig m_instance;
 
         private static readonly ConfigTool config = new ConfigTool();
         private static readonly Helper helper = new Helper();
+        private static readonly ConsoleCommands console = new ConsoleCommands();
 
         public ValheimBetterServerConfig instance
         {
@@ -52,6 +59,26 @@ namespace ValheimBetterServerConfig
             MethodInfo originRegisterServer = AccessTools.Method(typeof(ZSteamMatchmaking), "RegisterServer");
             MethodInfo patchRegisterServer = AccessTools.Method(typeof(ValheimBetterServerConfig), "RegisterServer_modded");
             harmony.Patch(originRegisterServer, new HarmonyMethod(patchRegisterServer));
+
+            MethodInfo originZNet = AccessTools.Method(typeof(ZNet), "Awake");
+            MethodInfo patchZNet = AccessTools.Method(typeof(ValheimBetterServerConfig), "Awake_modded");
+            harmony.Patch(originZNet, null, new HarmonyMethod(patchZNet));
+
+            Task.Run(async () =>
+            {
+                while (true)
+                {
+                    if (console.getZNet() != null)
+                    {
+                        string input = System.Console.ReadLine();
+                        console.runCommand(input);
+                    }
+                    else
+                    {
+                        Thread.Sleep(1000);
+                    }
+                }
+            });
         }
 
         [HarmonyPatch(typeof(FejdStartup), "ParseServerArguments")]
@@ -82,7 +109,7 @@ namespace ValheimBetterServerConfig
 
             bool publiclyVisable = true; //config.isVisable(); - publicly visable doesn't really zhange anything in Valheim code as the server visability can't be changed
 
-            __instance.m_publicServerToggle.isOn = publiclyVisable; 
+            __instance.m_publicServerToggle.isOn = publiclyVisable;
 
             ZNet.SetServer(true, true, publiclyVisable, serverName, password, createWorld);
             ZNet.SetServerHost("", 0);
@@ -101,12 +128,10 @@ namespace ValheimBetterServerConfig
             return false;
         }
 
-        /*[HarmonyPatch(typeof(ZNet), "Awake")]
-        [HarmonyPrefix]
         public static void Awake_modded(ZNet __instance)
         {
-            AccessTools.Field(typeof(ZNet), "m_publicReferencePosition").SetValue(__instance, config.getPlayerVisable()); //doesn't work valheim really???
-        }*/
+            console.setZNet(__instance);
+        }
 
 
         [HarmonyPatch(typeof(ZSteamMatchmaking), "RegisterServer")]

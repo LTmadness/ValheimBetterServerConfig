@@ -7,7 +7,7 @@ namespace ValheimBetterServerConfig
     {
 
         private const string DEFAULT_SETTINGS = "Default settings";
-        private const string ADVANCED_SETTINGS = "Default settings";
+        private const string ADVANCED_SETTINGS = "Advanced settings";
 
         private static ConfigTool m_instance;
         public static ConfigFile config;
@@ -45,7 +45,7 @@ namespace ValheimBetterServerConfig
                                                                                                                              "<color=RED>Server</color><color=BLUE>Name</color>, or you can do same <i>italc</i> or  <b>bold</b>,\n" +
                                                                                                                              " it doesn't work in steam server browser, also you can find more color names here: https://www.w3schools.com/colors/colors_names.asp"));
             serverPort = config.Bind<int>(DEFAULT_SETTINGS, "Server Port", 2456);
-            worldName = config.Bind<string>(DEFAULT_SETTINGS, "World Name", "ServerWorld", "World name, please change");
+            worldName = config.Bind<string>(DEFAULT_SETTINGS, "World Name", "ServerWorld");
             password = config.Bind<string>(DEFAULT_SETTINGS, "Server password", "changeMe", "server password, please change");
             saveLocation = config.Bind<string>(DEFAULT_SETTINGS, "Save location", "", "Server data save location");
 
@@ -130,5 +130,6 @@ namespace ValheimBetterServerConfig
         {
             config = config_file;
         }
+
     }
 }
