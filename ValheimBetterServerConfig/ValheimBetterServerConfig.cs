@@ -17,9 +17,6 @@ namespace ValheimBetterServerConfig
         public const string GUID = "org.ltmadness.valheim.betterserverconfig";
         public const string NAME = "Better Server Config";
         public const string VERSION = "0.0.40";
-        private static string newestVersion;
-        private static string Repository = "https://https://github.com/LTmadness/ValheimBetterServerConfig";
-        private static string ApiRepository = "https://github.com/LTmadness/ValheimBetterServerConfig/tags";
 
         private static ValheimBetterServerConfig m_instance;
 
@@ -75,33 +72,6 @@ namespace ValheimBetterServerConfig
                     }
                 }
             });
-            if (!isUpToDate())
-            {
-                Console.print("New BetterServerConfig version available - ");
-            }
-        }
-
-        public static bool isUpToDate()
-        {
-            WebClient client = new WebClient();
-            client.Headers.Add("User-Agent: V+ Server");
-            string reply;
-            try
-            {
-                reply = client.DownloadString(ApiRepository);
-                newestVersion = reply.Split(new[] { "," }, StringSplitOptions.None)[0].Trim().Replace("\"", "").Replace("[{name:", "");
-            }
-            catch
-            {
-                Debug.Log("The newest version could not be determined.");
-                newestVersion = "";
-            }
-
-            if (newestVersion.Equals(VERSION))
-            {
-                return true;
-            }
-            return false;
         }
 
         public static bool ParseServerArguments_modded(FejdStartup __instance, ref bool __result)

@@ -43,6 +43,7 @@ namespace ValheimBetterServerConfig
                 print("removeAdmin [userID] - remove user from admin list");
                 print("admins - list of admin user ids");
                 print("save - save server");
+                print("shutdown - shutdown the server");
                 print("difficulty [nr] - force difficulty");
             }
             else
@@ -145,6 +146,12 @@ namespace ValheimBetterServerConfig
                 {
                     long totalMemory = GC.GetTotalMemory(false);
                     print("Total allocated mem: " + (totalMemory / 1048576L).ToString("0") + "mb");
+                    return;
+                }
+
+                if (text.ToLower().StartsWith("shutdown"))
+                {
+                    zNet.Shutdown();
                     return;
                 }
 
