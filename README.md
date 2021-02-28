@@ -28,13 +28,13 @@ Config file will be generated after first server start
 
 ##### v0.0.40
 - Added even more commands to bash console:
-	*unpermit [ip/userID] - remove user from permitted user list
-	*addAdmin [userID] - add user to admin list
-	*removeAdmin [userID] - remove user from admin list
-	*admins - list of admin user ids
-	*save - save server
-	*shutdown - shutdown the server
-	*difficulty [nr] - force difficulty
+	* unpermit [ip/userID] - remove user from permitted user list
+	* addAdmin [userID] - add user to admin list
+	* removeAdmin [userID] - remove user from admin list
+	* admins - list of admin user ids
+	* save - save server
+	* shutdown - shutdown the server
+	* difficulty [nr] - force difficulty
 - Small fixes
 
 ##### v0.0.30
