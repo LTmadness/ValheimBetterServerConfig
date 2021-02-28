@@ -2,9 +2,7 @@
 using HarmonyLib;
 using Steamworks;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,7 +16,7 @@ namespace ValheimBetterServerConfig
     {
         public const string GUID = "org.ltmadness.valheim.betterserverconfig";
         public const string NAME = "Better Server Config";
-        public const string VERSION = "0.0.30";
+        public const string VERSION = "0.0.40";
 
         private static ValheimBetterServerConfig m_instance;
 
@@ -51,11 +49,6 @@ namespace ValheimBetterServerConfig
             MethodInfo patchParseServerArguments = AccessTools.Method(typeof(ValheimBetterServerConfig), "ParseServerArguments_modded");
             harmony.Patch(originParseServerArguments, new HarmonyMethod(patchParseServerArguments));
 
-            //seting server private and size not supported by Valheim??????
-            /*MethodInfo originAwakeZNet = AccessTools.Method(typeof(ZNet), "Awake");
-            MethodInfo patchAwakeZNet = AccessTools.Method(typeof(ValheimBetterServerConfig), "Awake_modded");
-            harmony.Patch(originAwakeZNet, new HarmonyMethod(patchAwakeZNet));*/
-
             MethodInfo originRegisterServer = AccessTools.Method(typeof(ZSteamMatchmaking), "RegisterServer");
             MethodInfo patchRegisterServer = AccessTools.Method(typeof(ValheimBetterServerConfig), "RegisterServer_modded");
             harmony.Patch(originRegisterServer, new HarmonyMethod(patchRegisterServer));
@@ -66,7 +59,7 @@ namespace ValheimBetterServerConfig
 
             Task.Run(async () =>
             {
-                while (true)
+                while(true)
                 {
                     if (console.getZNet() != null)
                     {
@@ -81,8 +74,6 @@ namespace ValheimBetterServerConfig
             });
         }
 
-        [HarmonyPatch(typeof(FejdStartup), "ParseServerArguments")]
-        [HarmonyPrefix]
         public static bool ParseServerArguments_modded(FejdStartup __instance, ref bool __result)
         {
             __instance.m_minimumPasswordLength = -1;
@@ -119,8 +110,6 @@ namespace ValheimBetterServerConfig
             return false;
         }
 
-        [HarmonyPatch(typeof(FejdStartup), "IsPublicPasswordValid")]
-        [HarmonyPrefix]
         public static bool IsPublicPasswordValid_modded(string password, World world, ref bool __result)
         {
 
@@ -133,9 +122,6 @@ namespace ValheimBetterServerConfig
             console.setZNet(__instance);
         }
 
-
-        [HarmonyPatch(typeof(ZSteamMatchmaking), "RegisterServer")]
-        [HarmonyPrefix]
         public static bool RegisterServer_modded(string name, bool password, string version, bool publicServer, string worldName,
             ZSteamMatchmaking __instance)
         {
