@@ -18,7 +18,7 @@ namespace ValheimBetterServerConfig
     {
         public const string GUID = "org.ltmadness.valheim.betterserverconfig";
         public const string NAME = "Better Server Config";
-        public const string VERSION = "0.0.40";
+        public const string VERSION = "0.0.50";
 
         private static ValheimBetterServerConfig m_instance;
 
