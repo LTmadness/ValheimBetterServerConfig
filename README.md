@@ -5,7 +5,7 @@ This is a simple mod to make your life easier configuring your valheim server.
 Lets you remove password from a dedicated server
 Easy config file with all of the options at your fingertips
 Extra configurable settings added to what is already accessible to you in valheim
-Bash console commands that you can run withchout going into the game, 
+Bash console commands that you can run without going into the game, 
 full list of commands can be found using command - help
 
 ## Skill/Experience
@@ -21,7 +21,7 @@ If you would like to support me you can do it here: https://streamlabs.com/ltmad
 
 <b>Do I need anything else to use it?</b>
 
-Yes, you need <b>BepInEx</b>, to install simple drop the ValheimBetterServerConfig.dll into BeopInEx/plugins,
+Yes, you need <b>BepInEx</b>, to install simple drop the ValheimBetterServerConfig.dll into BepInEx/plugins,
 Config file will be generated after first server start
 
 ### Changes

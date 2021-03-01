@@ -45,6 +45,7 @@ namespace ValheimBetterServerConfig
                 print("save - save server");
                 print("shutdown - shutdown the server");
                 print("difficulty [nr] - force difficulty");
+                print("sleep - force night skip");
             }
             else
             {
@@ -155,6 +156,12 @@ namespace ValheimBetterServerConfig
                     return;
                 }
 
+                if(text.ToLower().StartsWith("sleep"))
+                {
+                    EnvMan.instance.SkipToMorning();
+                    return;
+                }
+
             }
         }
 
@@ -218,7 +225,7 @@ namespace ValheimBetterServerConfig
             }
             if (peer != null)
             {
-                ZLog.Log("Kicking " + peer.m_playerName);
+                print("Kicking " + peer.m_playerName);
                 SendDisconnect(peer);
             }
         }
@@ -290,7 +297,7 @@ namespace ValheimBetterServerConfig
         {
             if (peer.m_rpc != null)
             {
-                ZLog.Log("Sent to " + peer.m_socket.GetEndPointString());
+                print("Sent to " + peer.m_socket.GetEndPointString());
                 peer.m_rpc.Invoke("Disconnect", Array.Empty<object>());
             }
         }

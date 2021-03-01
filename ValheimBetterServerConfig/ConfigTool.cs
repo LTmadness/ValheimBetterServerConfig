@@ -23,12 +23,11 @@ namespace ValheimBetterServerConfig
 
         //Advanced settings
         private ConfigEntry<string> serverNameColor;
-        //private ConfigEntry<bool> publiclyVisable;
         private ConfigEntry<int> serverSize;
-        //private ConfigEntry<bool> playerVisable;
         private ConfigEntry<bool> serverNameItalic;
         private ConfigEntry<bool> serverNameBold;
         private ConfigEntry<string> steamMapName;
+        private ConfigEntry<int> numberOfBackups;
 
         public ConfigTool instance
         {
@@ -50,13 +49,12 @@ namespace ValheimBetterServerConfig
             saveLocation = config.Bind<string>(DEFAULT_SETTINGS, "Save location", "", "Server data save location");
 
             //advanced settings
-            //publiclyVisable = config.Bind<bool>(ADVANCED_SETTINGS, "Server publicly visable", true, "Change me if you want your server to apear in server list");
             serverSize = config.Bind<int>(ADVANCED_SETTINGS, "Server size", 10, "Number of players allowed in the server, minimum 1, only works on steam browser so far");
-            //playerVisable = config.Bind<bool>(ADVANCED_SETTINGS, "Players Visable", false, "Default for new players joining the server, if set to true player by default will be visable on the map");
             serverNameColor = config.Bind<string>(ADVANCED_SETTINGS, "Server name color", "", "You can choose your server name color, doesn't work in steam server browser eg.: red");
             serverNameItalic = config.Bind<bool>(ADVANCED_SETTINGS, "Server name italic", false, "Should your server name be writen in italics, doesn't work on steam server browser");
             serverNameBold = config.Bind<bool>(ADVANCED_SETTINGS, "Server name bold", false, "Should your server name be writen in bold, doesn't work on steam server browser");
             steamMapName = config.Bind<string>(ADVANCED_SETTINGS, "Steam Map name", "", "If empty world name will be used");
+            numberOfBackups = config.Bind<int>(ADVANCED_SETTINGS, "Number of backups", 5, "Number of backups you wanna keep");
 
             if(!serverNameColor.Value.IsNullOrWhiteSpace() && !helper.hasColor(serverName.Value))
             {
@@ -101,11 +99,6 @@ namespace ValheimBetterServerConfig
             return password.Value;
         }
 
-        /*public bool isVisable()
-        {
-            return publiclyVisable.Value;
-        }*/
-
         public int getSize()
         {
             return serverSize.Value;
@@ -116,20 +109,19 @@ namespace ValheimBetterServerConfig
             return saveLocation.Value;
         }
 
-        /*public bool getPlayerVisable()
-        {
-            return playerVisable.Value;
-        }*/
-
         public string getSteamMapName()
         {
             return steamMapName.Value;
+        }
+
+        public int getNumberOfBackups()
+        {
+            return numberOfBackups.Value;
         }
 
         public void setConfigFile(ConfigFile config_file)
         {
             config = config_file;
         }
-
     }
 }

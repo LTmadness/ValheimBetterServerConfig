@@ -2,7 +2,9 @@
 using HarmonyLib;
 using Steamworks;
 using System;
-using System.Net;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,9 +22,11 @@ namespace ValheimBetterServerConfig
 
         private static ValheimBetterServerConfig m_instance;
 
-        private static readonly ConfigTool config = new ConfigTool();
-        private static readonly Helper helper = new Helper();
-        private static readonly ConsoleCommands console = new ConsoleCommands();
+        private static ConfigTool config = new ConfigTool();
+        private static Helper helper = new Helper();
+        private static ConsoleCommands console = new ConsoleCommands();
+
+        private static string[] saveTypes = { ".db", ".fwl" } ;
 
         public ValheimBetterServerConfig instance
         {
@@ -38,28 +42,11 @@ namespace ValheimBetterServerConfig
             config.setConfigFile(Config);
             config.loadConfig();
 
-            Harmony harmony = new Harmony(GUID);
-
-            MethodInfo originIsPublicPasswordValid = AccessTools.Method(typeof(FejdStartup), "IsPublicPasswordValid");
-            MethodInfo patchIsPublicPasswordValid = AccessTools.Method(typeof(ValheimBetterServerConfig), "IsPublicPasswordValid_modded");
-            harmony.Patch(originIsPublicPasswordValid, new HarmonyMethod(patchIsPublicPasswordValid));
-
-
-            MethodInfo originParseServerArguments = AccessTools.Method(typeof(FejdStartup), "ParseServerArguments");
-            MethodInfo patchParseServerArguments = AccessTools.Method(typeof(ValheimBetterServerConfig), "ParseServerArguments_modded");
-            harmony.Patch(originParseServerArguments, new HarmonyMethod(patchParseServerArguments));
-
-            MethodInfo originRegisterServer = AccessTools.Method(typeof(ZSteamMatchmaking), "RegisterServer");
-            MethodInfo patchRegisterServer = AccessTools.Method(typeof(ValheimBetterServerConfig), "RegisterServer_modded");
-            harmony.Patch(originRegisterServer, new HarmonyMethod(patchRegisterServer));
-
-            MethodInfo originZNet = AccessTools.Method(typeof(ZNet), "Awake");
-            MethodInfo patchZNet = AccessTools.Method(typeof(ValheimBetterServerConfig), "Awake_modded");
-            harmony.Patch(originZNet, null, new HarmonyMethod(patchZNet));
+            Harmony.CreateAndPatchAll(typeof(ValheimBetterServerConfig), GUID);
 
             Task.Run(async () =>
             {
-                while(true)
+                while (true)
                 {
                     if (console.getZNet() != null)
                     {
@@ -74,6 +61,8 @@ namespace ValheimBetterServerConfig
             });
         }
 
+        [HarmonyPatch(typeof(FejdStartup), "ParseServerArguments")]
+        [HarmonyPrefix]
         public static bool ParseServerArguments_modded(FejdStartup __instance, ref bool __result)
         {
             __instance.m_minimumPasswordLength = -1;
@@ -110,6 +99,8 @@ namespace ValheimBetterServerConfig
             return false;
         }
 
+        [HarmonyPatch(typeof(FejdStartup), "IsPublicPasswordValid")]
+        [HarmonyPrefix]
         public static bool IsPublicPasswordValid_modded(string password, World world, ref bool __result)
         {
 
@@ -117,11 +108,15 @@ namespace ValheimBetterServerConfig
             return false;
         }
 
+        [HarmonyPatch(typeof(ZNet), "Awake")]
+        [HarmonyPrefix]
         public static void Awake_modded(ZNet __instance)
         {
             console.setZNet(__instance);
         }
 
+        [HarmonyPatch(typeof(ZSteamMatchmaking), "RegisterServer")]
+        [HarmonyPrefix]
         public static bool RegisterServer_modded(string name, bool password, string version, bool publicServer, string worldName,
             ZSteamMatchmaking __instance)
         {
@@ -136,8 +131,38 @@ namespace ValheimBetterServerConfig
             SteamGameServer.EnableHeartbeats(true);
             SteamGameServer.SetMaxPlayerCount(config.getSize());
             SteamGameServer.SetGameDescription("Valheim");
-            ZLog.Log("Registering lobby (modded)");
+            print("Registering lobby (modded)");
             return false;
+        }
+
+        [HarmonyPatch(typeof(ZNet), "SaveWorld")]
+        [HarmonyPrefix]
+        public static void saveExtraBackups(bool sync)
+        {
+            int numberOfBackups = config.getNumberOfBackups() * saveTypes.Count();
+            if (numberOfBackups > 0) { 
+                string timeNow = (DateTime.Now.ToShortDateString().Replace("/", "-") + "-" + DateTime.Now.ToShortTimeString().Replace(":", "-")).Replace(" ", "");
+                string worldName = config.getWorldName();
+                string worldLocation = Utils.GetSaveDataPath() + "/worlds";
+                string backupDirectory = worldLocation + "/" + worldName;
+                // if doesn't exist create new backup store location
+                Directory.CreateDirectory(backupDirectory);
+
+                foreach (string type in saveTypes)
+                {
+                    string worldFile = (worldName + type).Replace(" ", "");
+                    string worldBackup = (timeNow + worldName + type + ".old").Replace(" ", "");
+                    string sourceFile = Path.Combine(worldLocation, worldFile);
+                    string destFile = Path.Combine(backupDirectory, worldBackup);
+                    File.Copy(sourceFile, destFile, true);
+                }
+
+                List<FileInfo> files = new DirectoryInfo(backupDirectory).EnumerateFiles()
+                                                 .OrderByDescending(f => f.CreationTime)
+                                                 .Skip(numberOfBackups)
+                                                 .ToList();
+                files.ForEach(f => f.Delete());
+            }
         }
     }
 }
