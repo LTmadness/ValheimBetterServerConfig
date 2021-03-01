@@ -5,8 +5,9 @@ This is a simple mod to make your life easier configuring your valheim server.
 Lets you remove password from a dedicated server
 Easy config file with all of the options at your fingertips
 Extra configurable settings added to what is already accessible to you in valheim
-Bash console commands that you can run withchout going into the game, 
+Bash console commands that you can run without going into the game, 
 full list of commands can be found using command - help
+Automated backup system with configurable amount of saves
 
 ## Skill/Experience
 I usually code in Java so please don't judge me too much for my c# skills :D also, this is my first mod ever :D
@@ -21,10 +22,15 @@ If you would like to support me you can do it here: https://streamlabs.com/ltmad
 
 <b>Do I need anything else to use it?</b>
 
-Yes, you need <b>BepInEx</b>, to install simple drop the ValheimBetterServerConfig.dll into BeopInEx/plugins,
+Yes, you need <b>BepInEx</b>, to install simple drop the ValheimBetterServerConfig.dll into BepInEx/plugins,
 Config file will be generated after first server start
 
 ### Changes
+#### v0.0.50
+- Added configurable backup system that puts set amount of backups(1 per save) into folder with your world name
+- Added new command for server bash console:
+	* sleep - fast foward to next morning
+- Code cleanup/fixes
 
 ##### v0.0.40
 - Added even more commands to bash console:
