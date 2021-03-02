@@ -18,7 +18,7 @@ namespace ValheimBetterServerConfig
     {
         public const string GUID = "org.ltmadness.valheim.betterserverconfig";
         public const string NAME = "Better Server Config";
-        public const string VERSION = "0.0.50";
+        public const string VERSION = "0.0.55";
 
         private static ValheimBetterServerConfig m_instance;
 
@@ -92,7 +92,8 @@ namespace ValheimBetterServerConfig
             __instance.m_publicServerToggle.isOn = publiclyVisable;
 
             ZNet.SetServer(true, true, publiclyVisable, serverName, password, createWorld);
-            ZNet.SetServerHost("", 0);
+            ZNet.ResetServerHost();
+            ZSteamSocket.SetDataPort(config.getServerPort());
             SteamManager.SetServerPort(config.getServerPort());
 
             __result = true;

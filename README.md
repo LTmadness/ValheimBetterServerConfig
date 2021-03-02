@@ -26,6 +26,9 @@ Yes, you need <b>BepInEx</b>, to install simple drop the ValheimBetterServerConf
 Config file will be generated after first server start
 
 ### Changes
+##### v0.0.55
+-Hot fix for change done in Valheim 0.147.3 update
+
 ##### v0.0.50
 - Added configurable backup system that puts set amount of backups(1 per save) into folder with your world name
 - Added new command for server bash console:
