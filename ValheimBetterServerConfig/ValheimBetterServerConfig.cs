@@ -19,7 +19,6 @@ namespace ValheimBetterServerConfig
         public const string NAME = "Better Server Config";
         public const string VERSION = "0.0.60";
 
-        private static ValheimBetterServerConfig m_instance;
         private static ConfigTool config;
         private static Helper helper = new Helper();
         private static ConsoleCommands console;
@@ -28,13 +27,11 @@ namespace ValheimBetterServerConfig
 
         private static string[] saveTypes = { ".db", ".fwl" };
 
-        public bool killConsole = false;
+        public bool runConsole = true;
 
-        public static ValheimBetterServerConfig instance { get => m_instance; }
 
         public void Awake()
         {
-            m_instance = this;
             config = new ConfigTool(Config);
 
             Harmony.CreateAndPatchAll(typeof(ValheimBetterServerConfig), GUID);
@@ -48,7 +45,7 @@ namespace ValheimBetterServerConfig
 
                 console = new ConsoleCommands(zNet, config);
 
-                while (!killConsole)
+                while (runConsole)
                 {
                     string input = System.Console.ReadLine();
                     console.runCommand(input);

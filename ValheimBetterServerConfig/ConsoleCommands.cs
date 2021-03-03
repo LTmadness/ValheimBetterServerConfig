@@ -183,34 +183,6 @@ namespace ValheimBetterServerConfig
                     return;
                 }
 
-                if (text.ToLower().StartsWith("killallplayers"))
-                {
-                    foreach (Character character in Character.GetAllCharacters())
-                    {
-                        if (character.IsPlayer())
-                        {
-                            HitData hitData = new HitData();
-                            hitData.m_damage.m_damage = 1E+10f;
-                            character.Damage(hitData);
-                        }
-                    }
-                    return;
-                }
-
-                if (text.ToLower().StartsWith("killall"))
-                {
-                    foreach (Character character in Character.GetAllCharacters())
-                    {
-                        if (!character.IsPlayer())
-                        {
-                            HitData hitData = new HitData();
-                            hitData.m_damage.m_damage = 1E+10f;
-                            character.Damage(hitData);
-                        }
-                    }
-                    return;
-                }
-
                 print("Invalid command to get all commands please use: help");
             }
         }
