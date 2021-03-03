@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
+using System.Collections.Generic;
 
 namespace ValheimBetterServerConfig
 {
@@ -9,32 +10,37 @@ namespace ValheimBetterServerConfig
         private const string DEFAULT_SETTINGS = "Default settings";
         private const string ADVANCED_SETTINGS = "Advanced settings";
 
-        private static ConfigTool m_instance;
         public static ConfigFile config;
+
         public static Helper helper = new Helper();
 
         //Default settings
-        private string name;
         private ConfigEntry<string> serverName;
-        private ConfigEntry<int> serverPort;
         private ConfigEntry<string> worldName;
         private ConfigEntry<string> password;
         private ConfigEntry<string> saveLocation;
 
+        private ConfigEntry<bool> visable;
+
+        private ConfigEntry<int> serverPort;
+
         //Advanced settings
         private ConfigEntry<string> serverNameColor;
-        private ConfigEntry<int> serverSize;
+        private ConfigEntry<string> steamMapName;
+        private ConfigEntry<string> serverUsername;
+
         private ConfigEntry<bool> serverNameItalic;
         private ConfigEntry<bool> serverNameBold;
-        private ConfigEntry<string> steamMapName;
-        private ConfigEntry<int> numberOfBackups;
 
-        public ConfigTool instance
+        private ConfigEntry<int> numberOfBackups;
+        private ConfigEntry<int> serverSize;
+
+        private string name;
+
+        public ConfigTool(ConfigFile config) 
         {
-            get
-            {
-                return ConfigTool.m_instance;
-            }
+            ConfigTool.config = config;
+            loadConfig();
         }
 
         public void loadConfig()
@@ -47,6 +53,7 @@ namespace ValheimBetterServerConfig
             worldName = config.Bind<string>(DEFAULT_SETTINGS, "World Name", "ServerWorld");
             password = config.Bind<string>(DEFAULT_SETTINGS, "Server password", "changeMe", "server password, please change");
             saveLocation = config.Bind<string>(DEFAULT_SETTINGS, "Save location", "", "Server data save location");
+            visable = config.Bind<bool>(DEFAULT_SETTINGS, "Publicly visable:", true, "Will server be publicly visable in server list");
 
             //advanced settings
             serverSize = config.Bind<int>(ADVANCED_SETTINGS, "Server size", 10, "Number of players allowed in the server, minimum 1, only works on steam browser so far");
@@ -55,6 +62,7 @@ namespace ValheimBetterServerConfig
             serverNameBold = config.Bind<bool>(ADVANCED_SETTINGS, "Server name bold", false, "Should your server name be writen in bold, doesn't work on steam server browser");
             steamMapName = config.Bind<string>(ADVANCED_SETTINGS, "Steam Map name", "", "If empty world name will be used");
             numberOfBackups = config.Bind<int>(ADVANCED_SETTINGS, "Number of backups", 5, "Number of backups you wanna keep");
+            serverUsername = config.Bind<string>(ADVANCED_SETTINGS, "Server username", "Server", "Used as sender name when using say/yell commands in server console");
 
             if(!serverNameColor.Value.IsNullOrWhiteSpace() && !helper.hasColor(serverName.Value))
             {
@@ -78,50 +86,33 @@ namespace ValheimBetterServerConfig
             config.Save();
         }
 
+        public string ServerName { get => name; }
+        public int ServerPort { get => serverPort.Value; }
+        public string WorldName{ get => worldName.Value; }
+        public string Password{ get => password.Value; }
+        public int Size { get => serverSize.Value; }
+        public string Location { get => saveLocation.Value; }
+        public string SteamMapName{ get => steamMapName.Value.IsNullOrWhiteSpace() ? worldName.Value : steamMapName.Value; }
+        public int NumberOfBackups { get => numberOfBackups.Value; }
+        public bool Visable { get => visable.Value; }
+        public string Username { get => serverUsername.Value; }
 
-        public string getServerName()
+        public List<string> getList()
         {
-            return name;
-        }
+            List<string> data = new List<string>();
 
-        public int getServerPort()
-        {
-            return serverPort.Value;
-        }
+            data.Add("Server name: " + name);
+            data.Add("Server Port: " + serverPort.Value);
+            data.Add("World Name: " + worldName.Value);
+            data.Add("Server password: " + password.Value);
+            data.Add("Is server visable: " + visable.Value);
+            data.Add("Server size: " + serverSize.Value);
+            data.Add("Server save location: " + saveLocation.Value);
+            data.Add("Steam map name: " + SteamMapName);
+            data.Add("Number of backups: " + numberOfBackups.Value);
+            data.Add("Server username: " + serverUsername.Value);
 
-        public string getWorldName()
-        {
-            return worldName.Value;
-        }
-
-        public string getPassword()
-        {
-            return password.Value;
-        }
-
-        public int getSize()
-        {
-            return serverSize.Value;
-        }
-
-        public string getLocation()
-        {
-            return saveLocation.Value;
-        }
-
-        public string getSteamMapName()
-        {
-            return steamMapName.Value;
-        }
-
-        public int getNumberOfBackups()
-        {
-            return numberOfBackups.Value;
-        }
-
-        public void setConfigFile(ConfigFile config_file)
-        {
-            config = config_file;
+            return data;
         }
     }
 }

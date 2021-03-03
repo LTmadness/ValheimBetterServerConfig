@@ -2,29 +2,18 @@
 using System;
 using System.Collections.Generic;
 using BepInEx;
+using UnityEngine;
 
 namespace ValheimBetterServerConfig
 {
     class ConsoleCommands
     {
-        private static ConsoleCommands m_instance;
         private ZNet zNet;
-        public ConsoleCommands instance 
-        {
-            get
-            {
-                return ConsoleCommands.m_instance;
-            }
-         }
-
-        public void setZNet(ZNet zNet)
+        private ConfigTool config;
+        public ConsoleCommands(ZNet zNet, ConfigTool config)
         {
             this.zNet = zNet;
-        }
-
-        public ZNet getZNet()
-        {
-            return zNet;
+            this.config = config;
         }
 
         public void runCommand(string text)
@@ -46,6 +35,9 @@ namespace ValheimBetterServerConfig
                 print("shutdown - shutdown the server");
                 print("difficulty [nr] - force difficulty");
                 print("sleep - force night skip");
+                print("say - to say something as server");
+                print("yell - to shout something as server");
+                print("config - shows all what is set on your settings");
             }
             else
             {
@@ -159,6 +151,34 @@ namespace ValheimBetterServerConfig
                 if(text.ToLower().StartsWith("sleep"))
                 {
                     EnvMan.instance.SkipToMorning();
+                    return;
+                }
+
+                if(text.ToLower().StartsWith("say "))
+                {
+                    string message = text.Substring(4);
+                    string username = config.Username;
+                    ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "ChatMessage", new object[] { new Vector3(), 1, username , message });
+                    print(username + ": " + message);
+                    return;
+                }
+
+                if (text.ToLower().StartsWith("yell "))
+                {
+                    string message = text.Substring(5);
+                    string username = config.Username;
+                    ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "ChatMessage", new object[] { new Vector3(), 2, username, message });
+                    print(username + ": " + message);
+                    return;
+                }
+
+                if(text.ToLower().StartsWith("config"))
+                {
+                    print("Your current settings:");
+                    foreach(string conf in config.getList())
+                    {
+                        print(conf);
+                    }
                     return;
                 }
 
