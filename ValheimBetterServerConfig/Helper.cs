@@ -10,16 +10,6 @@ namespace ValheimBetterServerConfig
     {
         private static readonly string colorRegex = "<color=.*?>|<\\/color>";
 
-        private static Helper m_instance;
-       
-        public Helper instance
-        {
-            get
-            {
-                return Helper.m_instance;
-            }
-        }
-
         public bool isPasswordValid(String password, World world, string serverName)
         {
             if (!password.Equals(""))
