@@ -35,8 +35,8 @@ namespace ValheimBetterServerConfig
                 print("shutdown - shutdown the server");
                 print("difficulty [nr] - force difficulty");
                 print("sleep - force night skip");
-                print("say - to say something as server");
-                print("yell - to shout something as server");
+                print("say [message] - to say something as server");
+                print("yell [message] - to shout something as server");
                 print("config - shows all what is set on your settings");
             }
             else
