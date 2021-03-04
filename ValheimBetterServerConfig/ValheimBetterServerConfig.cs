@@ -27,8 +27,9 @@ namespace ValheimBetterServerConfig
 
         private static string[] saveTypes = { ".db", ".fwl" };
 
-        public bool runConsole = true;
+        public static bool serverInisialised = false;
 
+        public bool runConsole = true;
 
         public void Awake()
         {
@@ -38,7 +39,7 @@ namespace ValheimBetterServerConfig
 
             Task.Run(async () =>
             {
-                while (zNet == null)
+                while ((zNet == null) || !serverInisialised)
                 {
                     Thread.Sleep(1000);// waiting for zNets  to inisialise
                 }
@@ -139,13 +140,21 @@ namespace ValheimBetterServerConfig
                 // if doesn't exist create new backup store location
                 Directory.CreateDirectory(backupDirectory);
 
-                foreach (string type in saveTypes)
+                try
                 {
-                    string worldFile = (worldName + type).Replace(" ", "");
-                    string worldBackup = (timeNow + worldName + type + ".old").Replace(" ", "");
-                    string sourceFile = Path.Combine(worldLocation, worldFile);
-                    string destFile = Path.Combine(backupDirectory, worldBackup);
-                    File.Copy(sourceFile, destFile, true);
+                    foreach (string type in saveTypes)
+                    {
+                        string worldFile = (worldName + type).Replace(" ", "");
+                        string worldBackup = (timeNow + worldName + type + ".old").Replace(" ", "");
+                        string sourceFile = Path.Combine(worldLocation, worldFile);
+                        string destFile = Path.Combine(backupDirectory, worldBackup);
+                        File.Copy(sourceFile, destFile, true);
+                    }
+                }
+                catch
+                {
+                    print("Nothing to back up yet");
+                    return;
                 }
 
                 List<FileInfo> files = new DirectoryInfo(backupDirectory).EnumerateFiles()
@@ -154,6 +163,13 @@ namespace ValheimBetterServerConfig
                                                  .ToList();
                 files.ForEach(f => f.Delete());
             }
+        }
+
+        [HarmonyPatch(typeof(DungeonDB), "Start")]
+        [HarmonyPostfix]
+        public static void Start()
+        {
+            serverInisialised = true;
         }
     }
 }

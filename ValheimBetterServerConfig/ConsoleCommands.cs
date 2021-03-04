@@ -146,6 +146,7 @@ namespace ValheimBetterServerConfig
                 {
                     zNet.Save(true);
                     Application.Quit();
+                    System.Console.Out.Close();
                     return;
                 }
 
