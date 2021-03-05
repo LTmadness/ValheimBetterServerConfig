@@ -17,7 +17,7 @@ namespace ValheimBetterServerConfig
     {
         public const string GUID = "org.ltmadness.valheim.betterserverconfig";
         public const string NAME = "Better Server Config";
-        public const string VERSION = "0.0.60";
+        public const string VERSION = "0.0.70";
 
         private static ConfigTool config;
         private static Helper helper = new Helper();
@@ -27,8 +27,9 @@ namespace ValheimBetterServerConfig
 
         private static string[] saveTypes = { ".db", ".fwl" };
 
-        public bool runConsole = true;
+        public static bool serverInisialised = false;
 
+        public bool runConsole = true;
 
         public void Awake()
         {
@@ -38,7 +39,7 @@ namespace ValheimBetterServerConfig
 
             Task.Run(async () =>
             {
-                while (zNet == null)
+                while ((zNet == null) || !serverInisialised)
                 {
                     Thread.Sleep(1000);// waiting for zNets  to inisialise
                 }
@@ -116,12 +117,12 @@ namespace ValheimBetterServerConfig
             SteamGameServer.SetMapName(config.SteamMapName);
             SteamGameServer.SetPasswordProtected(password);
             SteamGameServer.SetGameTags(version);
+            SteamGameServer.EnableHeartbeats(publicServer);
+            SteamGameServer.SetMaxPlayerCount(config.Size);
+            SteamGameServer.SetGameDescription("Valheim");
             AccessTools.Field(typeof(ZSteamMatchmaking), "m_registerServerName").SetValue(__instance, config.ServerName);
             AccessTools.Field(typeof(ZSteamMatchmaking), "m_registerPassword").SetValue(__instance, password);
             AccessTools.Field(typeof(ZSteamMatchmaking), "m_registerVerson").SetValue(__instance, version);
-            SteamGameServer.EnableHeartbeats(true);
-            SteamGameServer.SetMaxPlayerCount(config.Size);
-            SteamGameServer.SetGameDescription("Valheim");
             print("Registering lobby (modded)");
             return false;
         }
@@ -139,21 +140,36 @@ namespace ValheimBetterServerConfig
                 // if doesn't exist create new backup store location
                 Directory.CreateDirectory(backupDirectory);
 
-                foreach (string type in saveTypes)
+                try
                 {
-                    string worldFile = (worldName + type).Replace(" ", "");
-                    string worldBackup = (timeNow + worldName + type + ".old").Replace(" ", "");
-                    string sourceFile = Path.Combine(worldLocation, worldFile);
-                    string destFile = Path.Combine(backupDirectory, worldBackup);
-                    File.Copy(sourceFile, destFile, true);
+                    foreach (string type in saveTypes)
+                    {
+                        string worldFile = (worldName + type).Replace(" ", "");
+                        string worldBackup = (timeNow + worldName + type + ".old").Replace(" ", "");
+                        string sourceFile = Path.Combine(worldLocation, worldFile);
+                        string destFile = Path.Combine(backupDirectory, worldBackup);
+                        File.Copy(sourceFile, destFile, true);
+                    }
+                }
+                catch
+                {
+                    print("Nothing to back up yet");
+                    return;
                 }
 
                 List<FileInfo> files = new DirectoryInfo(backupDirectory).EnumerateFiles()
-                                                 .OrderByDescending(f => f.CreationTime)
-                                                 .Skip(numberOfBackups)
-                                                 .ToList();
+                                                                         .OrderByDescending(f => f.CreationTime)
+                                                                         .Skip(numberOfBackups)
+                                                                         .ToList();
                 files.ForEach(f => f.Delete());
             }
+        }
+
+        [HarmonyPatch(typeof(DungeonDB), "Start")]
+        [HarmonyPostfix]
+        public static void Start()
+        {
+            serverInisialised = true;
         }
     }
 }

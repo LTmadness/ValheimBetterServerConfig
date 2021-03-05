@@ -8,182 +8,103 @@ namespace ValheimBetterServerConfig
 {
     class ConsoleCommands
     {
+        private static Dictionary<string, string> commands = new Dictionary<string, string>();
+        private static Dictionary<string, string> hint = new Dictionary<string, string>();
+
         private ZNet zNet;
         private ConfigTool config;
+
         public ConsoleCommands(ZNet zNet, ConfigTool config)
         {
             this.zNet = zNet;
             this.config = config;
+            registerCommands();
+        }
+
+        private void registerCommands()
+        {
+            commands.Add("help", "Help");
+
+            commands.Add("kick", "Kick");
+            hint.Add("kick", "kick [name/ip/userID] - kick user");
+
+            commands.Add("ban", "Ban");
+            hint.Add("ban", "ban [name/ip/userID] - ban user");
+
+            commands.Add("unban", "Unban");
+            hint.Add("unban", "unban [ip/userID] - unban user");
+
+            commands.Add("banned", "printBanned");
+            hint.Add("banned", "banned - list banned users");
+
+            commands.Add("permitted", "printPermitted");
+            hint.Add("permitted", "permitted - list permitted users");
+
+            commands.Add("permit", "Permit");
+            hint.Add("permit", "permit [ip/userID] - add user to permitted user list");
+
+            commands.Add("unpermit", "UnPermit");
+            hint.Add("unpermit", "unpermit [ip/userID] - remove user from permitted user list");
+
+            commands.Add("addadmin", "AddAdmin");
+            hint.Add("addadmin", "addAdmin [userID] - add user to admin list");
+
+            commands.Add("removeadmin", "RemoveAdmin");
+            hint.Add("removeadmin", "removeAdmin [userID] - remove user from admin list");
+
+            commands.Add("admins", "printAdmins");
+            hint.Add("admins", "admins - list of admin user ids");
+
+            commands.Add("save", "Save");
+            hint.Add("save", "save - save server");
+
+            commands.Add("difficulty", "Difficulty");
+            hint.Add("difficulty", "difficulty [nr] - force difficulty");
+
+            commands.Add("memory", "Memory");
+            hint.Add("memory", "memory - show amount of memory used by server");
+
+            commands.Add("shutdown", "Shutdown");
+            hint.Add("shutdown", "shutdown - shutdown the server");
+
+            commands.Add("sleep", "Sleep");
+            hint.Add("sleep", "sleep - force night skip");
+
+            commands.Add("say", "Say");
+            hint.Add("say", "say [message] - to say something as server");
+
+            commands.Add("yell", "Yell");
+            hint.Add("yell", "yell [message] - to shout something as server");
+
+            commands.Add("config", "Config");
+            hint.Add("config", "config - shows all what is set on your settings");
         }
 
         public void runCommand(string text)
         {
-            if (text.StartsWith("help"))
+            text = text.Trim();
+            if (!text.IsNullOrWhiteSpace())
             {
-                print("Available commands:");
-                print("kick [name/ip/userID] - kick user");
-                print("ban [name/ip/userID] - ban user");
-                print("unban [ip/userID] - unban user");
-                print("banned - list banned users");
-                print("permit [ip/userID] - add user to permitted user list");
-                print("unpermit [ip/userID] - remove user from permitted user list");
-                print("permitted - list permitted users");
-                print("addAdmin [userID] - add user to admin list");
-                print("removeAdmin [userID] - remove user from admin list");
-                print("admins - list of admin user ids");
-                print("save - save server");
-                print("shutdown - shutdown the server");
-                print("difficulty [nr] - force difficulty");
-                print("sleep - force night skip");
-                print("say [message] - to say something as server");
-                print("yell [message] - to shout something as server");
-                print("config - shows all what is set on your settings");
-            }
-            else
-            {
-                if (text.ToLower().StartsWith("kick "))
+                string[] arg = text.Split(' ');
+                if (arg.Length > 0)
                 {
-                    string user = text.Substring(5);
-                    Kick(user);
-                    return;
-                }
-
-                if (text.ToLower().StartsWith("ban "))
-                {
-                    string user = text.Substring(4);
-                    Ban(user);
-                    return;
-                }
-
-                if (text.ToLower().StartsWith("unban "))
-                {
-                    string user = text.Substring(6);
-                    Unban(user);
-                    return;
-                }
-
-                if (text.ToLower().StartsWith("banned"))
-                {
-                    printBanned();
-                    return;
-                }
-
-                if (text.ToLower().StartsWith("permitted"))
-                {
-                    printPermitted();
-                    return;
-                }
-
-                if (text.ToLower().StartsWith("permit "))
-                {
-                    string user = text.Substring(7);
-                    Permit(user);
-                    return;
-                }
-
-                if (text.ToLower().StartsWith("unpermit "))
-                {
-                    string user = text.Substring(9);
-                    UnPermit(user);
-                    return;
-                }
-
-                if (text.ToLower().StartsWith("addadmin "))
-                {
-                    string user = text.Substring(9);
-                    AddAdmin(user);
-                    return;
-                }
-
-                if (text.ToLower().StartsWith("removeadmin "))
-                {
-                    string user = text.Substring(12);
-                    RemoveAdmin(user);
-                    return;
-                }
-
-                if (text.ToLower().StartsWith("admins"))
-                {
-                    printAdmins();
-                    return;
-                }
-
-                if (text.ToLower().StartsWith("save"))
-                {
-                    zNet.Save(false);
-                    return;
-                }
-
-                if (text.ToLower().StartsWith("difficulty "))
-                {
-                    int num = 0;
-                    try
+                    if (commands.ContainsKey(arg[0].ToLower()))
                     {
-                        num = int.Parse(text.Substring(11));
-                    }
-                    catch
-                    {
-                        print("Number was incorrect");
-                        return;
-                    }
-
-                    if (num >= 1) 
-                    { 
-                        Game.instance.SetForcePlayerDifficulty(num);
-                        print("Setting players to " + num);
+                        string method = commands[arg[0].ToLower()];
+                        AccessTools.Method(typeof(ConsoleCommands), method).Invoke(this, new object[] { arg });
                         return;
                     }
                 }
-
-                if (text.ToLower().StartsWith("memory"))
-                {
-                    long totalMemory = GC.GetTotalMemory(false);
-                    print("Total allocated mem: " + (totalMemory / 1048576L).ToString("0") + "mb");
-                    return;
-                }
-
-                if (text.ToLower().StartsWith("shutdown"))
-                {
-                    zNet.Save(true);
-                    Application.Quit();
-                    return;
-                }
-
-                if(text.ToLower().StartsWith("sleep"))
-                {
-                    EnvMan.instance.SkipToMorning();
-                    return;
-                }
-
-                if(text.ToLower().StartsWith("say "))
-                {
-                    string message = text.Substring(4);
-                    string username = config.Username;
-                    ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "ChatMessage", new object[] { new Vector3(), 1, username , message });
-                    print(username + ": " + message);
-                    return;
-                }
-
-                if (text.ToLower().StartsWith("yell "))
-                {
-                    string message = text.Substring(5);
-                    string username = config.Username;
-                    ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "ChatMessage", new object[] { new Vector3(), 2, username, message });
-                    print(username + ": " + message);
-                    return;
-                }
-
-                if(text.ToLower().StartsWith("config"))
-                {
-                    print("Your current settings:");
-                    foreach(string conf in config.getList())
-                    {
-                        print(conf);
-                    }
-                    return;
-                }
-
                 print("Invalid command to get all commands please use: help");
+            }
+        }
+
+        public static void Help(string[] args)
+        {
+            print("Available commands:");
+            foreach(KeyValuePair<string, string> entry in hint)
+            {
+                print(entry.Value);
             }
         }
 
@@ -192,127 +113,146 @@ namespace ValheimBetterServerConfig
             System.Console.WriteLine(text);
         }
 
-        private void Kick(string user)
+        private void Kick(string[] args)
         {
-            if (user.IsNullOrWhiteSpace())
+            if (UserSupplied(args))
             {
-                print("No user found");
-                return;
+                string user = rebuildString(args);
+                ZNetPeer znetPeer = zNet.GetPeerByHostName(user);
+                if (znetPeer == null)
+                {
+                    znetPeer = zNet.GetPeerByPlayerName(user);
+                }
+                if (znetPeer != null)
+                {
+                    print("Kicking " + znetPeer.m_playerName);
+                    SendDisconnect(znetPeer);
+                }
+                else
+                {
+                    print("Incorrect player name: " + user);
+                }
             }
-
-            ZNetPeer znetPeer = zNet.GetPeerByHostName(user);
-            if (znetPeer == null)
+            else
             {
-                znetPeer = zNet.GetPeerByPlayerName(user);
-            }
-            if (znetPeer != null)
-            {
-                Kick(znetPeer);
-            }
-        }
-        private void Ban(string user)
-        {
-            if (user.IsNullOrWhiteSpace())
-            {
-                return;
-            }
-            ZNetPeer peerByPlayerName = zNet.GetPeerByPlayerName(user);
-            if (peerByPlayerName != null)
-            {
-                user = peerByPlayerName.m_socket.GetHostName();
-            }
-            print( "Banning user " + user);
-            SyncedList bannedPlayers = (SyncedList) AccessTools.Field(typeof(ZNet), "m_bannedList").GetValue(zNet);
-            bannedPlayers.Add(user);
-            AccessTools.Field(typeof(ZNet), "m_bannedList").SetValue(zNet, bannedPlayers);
-        }
-
-        private void Unban(string user)
-        {
-            if (user.IsNullOrWhiteSpace())
-            {
-                return;
-            }
-            print( "Unbanning user " + user);
-            SyncedList bannedPlayers = (SyncedList) AccessTools.Field(typeof(ZNet), "m_bannedList").GetValue(zNet);
-            bannedPlayers.Remove(user);
-            AccessTools.Field(typeof(ZNet), "m_bannedList").SetValue(zNet, bannedPlayers);
-        }
-
-        private void Kick(ZNetPeer peer)
-        {
-            if (!zNet.IsServer())
-            {
-                return;
-            }
-            if (peer != null)
-            {
-                print("Kicking " + peer.m_playerName);
-                SendDisconnect(peer);
+                print(hint[args[0]]);
             }
         }
 
-        private void Permit(string user)
+        private void Ban(string[] args)
         {
-            if (user.IsNullOrWhiteSpace())
+            if (UserSupplied(args))
             {
-                return;
+                string user = rebuildString(args);
+                ZNetPeer peerByPlayerName = zNet.GetPeerByPlayerName(user);
+                if (peerByPlayerName != null)
+                {
+                    user = peerByPlayerName.m_socket.GetHostName();
+                }
+                print("Banning user " + user);
+                SyncedList bannedPlayers = (SyncedList)AccessTools.Field(typeof(ZNet), "m_bannedList").GetValue(zNet);
+                bannedPlayers.Add(user);
+                AccessTools.Field(typeof(ZNet), "m_bannedList").SetValue(zNet, bannedPlayers);
             }
-            ZNetPeer peerByPlayerName = zNet.GetPeerByPlayerName(user);
-            if (peerByPlayerName != null)
+            else
             {
-                user = peerByPlayerName.m_socket.GetHostName();
+                print(hint[args[0]]);
             }
-            print("Permitting user " + user);
-            SyncedList permittedPlayers = (SyncedList)AccessTools.Field(typeof(ZNet), "m_permittedList").GetValue(zNet);
-            permittedPlayers.Add(user);
-            AccessTools.Field(typeof(ZNet), "m_permittedList").SetValue(zNet, permittedPlayers);
         }
 
-        private void UnPermit(string user)
+        private void Unban(string[] args)
         {
-            if (user.IsNullOrWhiteSpace())
+            if (UserSupplied(args))
             {
-                return;
+                string user = rebuildString(args);
+                print("Unbanning user " + user);
+                SyncedList bannedPlayers = (SyncedList)AccessTools.Field(typeof(ZNet), "m_bannedList").GetValue(zNet);
+                bannedPlayers.Remove(user);
+                AccessTools.Field(typeof(ZNet), "m_bannedList").SetValue(zNet, bannedPlayers);
             }
-            print("Removing user from permited user list" + user);
-            SyncedList permittedPlayers = (SyncedList)AccessTools.Field(typeof(ZNet), "m_permittedList").GetValue(zNet);
-            permittedPlayers.Remove(user);
-            AccessTools.Field(typeof(ZNet), "m_permittedList").SetValue(zNet, permittedPlayers);
+            else
+            {
+                print(hint[args[0]]);
+            }
         }
 
-        private void AddAdmin(string user)
+        private void Permit(string[] args)
         {
-            if (user.IsNullOrWhiteSpace())
+            if (UserSupplied(args))
             {
-                return;
+                string user = rebuildString(args);
+                ZNetPeer peerByPlayerName = zNet.GetPeerByPlayerName(user);
+                if (peerByPlayerName != null)
+                {
+                    user = peerByPlayerName.m_socket.GetHostName();
+                }
+                print("Permitting user " + user);
+                SyncedList permittedPlayers = (SyncedList)AccessTools.Field(typeof(ZNet), "m_permittedList").GetValue(zNet);
+                permittedPlayers.Add(user);
+                AccessTools.Field(typeof(ZNet), "m_permittedList").SetValue(zNet, permittedPlayers);
             }
-            ZNetPeer peerByPlayerName = zNet.GetPeerByPlayerName(user);
-            if (peerByPlayerName != null)
+            else
             {
-                user = peerByPlayerName.m_socket.GetHostName();
+                print(hint[args[0]]);
             }
-            print("Adding player to the admin list:" + user);
-            SyncedList adminList = (SyncedList)AccessTools.Field(typeof(ZNet), "m_adminList").GetValue(zNet);
-            adminList.Add(user);
-            AccessTools.Field(typeof(ZNet), "m_adminList").SetValue(zNet, adminList);
         }
 
-        private void RemoveAdmin(string user)
+        private void UnPermit(string[] args)
         {
-            if (user.IsNullOrWhiteSpace())
+            if (UserSupplied(args))
             {
-                return;
+                string user = rebuildString(args);
+                print("Removing user from permited user list" + user);
+                SyncedList permittedPlayers = (SyncedList)AccessTools.Field(typeof(ZNet), "m_permittedList").GetValue(zNet);
+                permittedPlayers.Remove(user);
+                AccessTools.Field(typeof(ZNet), "m_permittedList").SetValue(zNet, permittedPlayers);
             }
-            ZNetPeer peerByPlayerName = zNet.GetPeerByPlayerName(user);
-            if (peerByPlayerName != null)
+            else
             {
-                user = peerByPlayerName.m_socket.GetHostName();
+                print(hint[args[0]]);
             }
-            print("Removing player from the admin list:" + user);
-            SyncedList adminList = (SyncedList)AccessTools.Field(typeof(ZNet), "m_adminList").GetValue(zNet);
-            adminList.Remove(user);
-            AccessTools.Field(typeof(ZNet), "m_adminList").SetValue(zNet, adminList);
+        }
+
+        private void AddAdmin(string[] args)
+        {
+            if (UserSupplied(args))
+            {
+                string user = rebuildString(args);
+                ZNetPeer peerByPlayerName = zNet.GetPeerByPlayerName(user);
+                if (peerByPlayerName != null)
+                {
+                    user = peerByPlayerName.m_socket.GetHostName();
+                }
+                print("Adding player to the admin list:" + user);
+                SyncedList adminList = (SyncedList)AccessTools.Field(typeof(ZNet), "m_adminList").GetValue(zNet);
+                adminList.Add(user);
+                AccessTools.Field(typeof(ZNet), "m_adminList").SetValue(zNet, adminList);
+            }
+            else
+            {
+                print(hint[args[0]]);
+            }
+        }
+
+        private void RemoveAdmin(string[] args)
+        {
+            if (UserSupplied(args))
+            {
+                string user = rebuildString(args);
+                ZNetPeer peerByPlayerName = zNet.GetPeerByPlayerName(user);
+                if (peerByPlayerName != null)
+                {
+                    user = peerByPlayerName.m_socket.GetHostName();
+                }
+                print("Removing player from the admin list:" + user);
+                SyncedList adminList = (SyncedList)AccessTools.Field(typeof(ZNet), "m_adminList").GetValue(zNet);
+                adminList.Remove(user);
+                AccessTools.Field(typeof(ZNet), "m_adminList").SetValue(zNet, adminList);
+            }
+            else
+            {
+                print(hint[args[0]]);
+            }
         }
 
         private void SendDisconnect(ZNetPeer peer)
@@ -324,18 +264,18 @@ namespace ValheimBetterServerConfig
             }
         }
 
-        private void printBanned()
+        private void printBanned(string[] args)
         {
             print("Ban player steam IDs/IPs:");
-            SyncedList ids = (SyncedList) AccessTools.Field(typeof(ZNet), "m_bannedList").GetValue(zNet);
+            SyncedList ids = (SyncedList)AccessTools.Field(typeof(ZNet), "m_bannedList").GetValue(zNet);
             List<string> idList = ids.GetList();
-            foreach(string id in idList)
+            foreach (string id in idList)
             {
                 print(id);
             }
         }
 
-        private void printPermitted()
+        private void printPermitted(string[] args)
         {
             print("Permited player steam IDs/IPs:");
             SyncedList ids = (SyncedList)AccessTools.Field(typeof(ZNet), "m_permittedList").GetValue(zNet);
@@ -346,7 +286,7 @@ namespace ValheimBetterServerConfig
             }
         }
 
-        private void printAdmins()
+        private void printAdmins(string[] args)
         {
             print("Admin ids:");
             SyncedList ids = (SyncedList)AccessTools.Field(typeof(ZNet), "m_adminList").GetValue(zNet);
@@ -356,5 +296,90 @@ namespace ValheimBetterServerConfig
                 print(id);
             }
         }
-    } 
+
+        private bool UserSupplied(string[] args)
+        {
+            if (args.Length < 1 && args[1].IsNullOrWhiteSpace())
+            {
+                print("No or incorrect user supplied");
+                return false;
+            }
+            return true;
+        }
+
+        private void Save(string[] args)
+        {
+            zNet.Save(false);
+        }
+
+        private void Difficulty(string[] args)
+        {
+            int num = 0;
+            try
+            {
+                num = int.Parse(args[1]);
+            }
+            catch
+            {
+                print("Number was incorrect");
+                return;
+            }
+
+            if (num >= 1)
+            {
+                Game.instance.SetForcePlayerDifficulty(num);
+                print("Setting players to " + num);
+            }
+
+        }
+
+        private void Memory(string[] args)
+        {
+            long totalMemory = GC.GetTotalMemory(false);
+            print("Total allocated memory: " + (totalMemory / 1048576L).ToString("0") + "mb");
+        }
+
+        private void Shutdown(string[] args)
+        {
+            zNet.Save(true);
+            Application.Quit();
+            System.Console.Out.Close();
+        }
+
+        private void Sleep(string[] args)
+        {
+            EnvMan.instance.SkipToMorning();
+        }
+
+        private void Say(string[] args)
+        {
+            string message = rebuildString(args);
+            string username = config.Username;
+            ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "ChatMessage", new object[] { new Vector3(), 1, username, message });
+            print(username + ": " + message);
+        }
+
+        private void Yell(string[] args)
+        {
+            string message = rebuildString(args);
+            string username = config.Username;
+            ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "ChatMessage", new object[] { new Vector3(), 2, username, message });
+            print(username + ": " + message);
+        }
+
+        private void Config(string[] args)
+        {
+            print("Your current settings:");
+            foreach (string conf in config.getList())
+            {
+                print(conf);
+            }
+        }
+
+        private string rebuildString(string[] args)
+        {
+            args[0] = "";
+            return String.Join(" ", args).Trim();
+        }
+    }
 }
