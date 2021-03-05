@@ -28,9 +28,10 @@ Config file will be generated after first server start
 ### Changes
 
 ##### v0.0.70
-- Reworked comand system
+- Reworked command system
 - Fixed Shutdown command
-- Fixed visable setting
+- Fixed visible setting
+
 
 ##### v0.0.60
 - Added new commands:
