@@ -117,12 +117,12 @@ namespace ValheimBetterServerConfig
             SteamGameServer.SetMapName(config.SteamMapName);
             SteamGameServer.SetPasswordProtected(password);
             SteamGameServer.SetGameTags(version);
+            SteamGameServer.EnableHeartbeats(publicServer);
+            SteamGameServer.SetMaxPlayerCount(config.Size);
+            SteamGameServer.SetGameDescription("Valheim");
             AccessTools.Field(typeof(ZSteamMatchmaking), "m_registerServerName").SetValue(__instance, config.ServerName);
             AccessTools.Field(typeof(ZSteamMatchmaking), "m_registerPassword").SetValue(__instance, password);
             AccessTools.Field(typeof(ZSteamMatchmaking), "m_registerVerson").SetValue(__instance, version);
-            SteamGameServer.EnableHeartbeats(true);
-            SteamGameServer.SetMaxPlayerCount(config.Size);
-            SteamGameServer.SetGameDescription("Valheim");
             print("Registering lobby (modded)");
             return false;
         }
@@ -158,9 +158,9 @@ namespace ValheimBetterServerConfig
                 }
 
                 List<FileInfo> files = new DirectoryInfo(backupDirectory).EnumerateFiles()
-                                                 .OrderByDescending(f => f.CreationTime)
-                                                 .Skip(numberOfBackups)
-                                                 .ToList();
+                                                                         .OrderByDescending(f => f.CreationTime)
+                                                                         .Skip(numberOfBackups)
+                                                                         .ToList();
                 files.ForEach(f => f.Delete());
             }
         }
