@@ -82,6 +82,7 @@ namespace ValheimBetterServerConfig
 
         public void runCommand(string text)
         {
+            text = text.Trim();
             if (!text.IsNullOrWhiteSpace())
             {
                 string[] arg = text.Split(' ');
@@ -94,8 +95,8 @@ namespace ValheimBetterServerConfig
                         return;
                     }
                 }
+                print("Invalid command to get all commands please use: help");
             }
-            print("Invalid command to get all commands please use: help");
         }
 
         public static void Help(string[] args)
@@ -116,10 +117,11 @@ namespace ValheimBetterServerConfig
         {
             if (UserSupplied(args))
             {
-                ZNetPeer znetPeer = zNet.GetPeerByHostName(args[1]);
+                string user = rebuildString(args);
+                ZNetPeer znetPeer = zNet.GetPeerByHostName(user);
                 if (znetPeer == null)
                 {
-                    znetPeer = zNet.GetPeerByPlayerName(args[1]);
+                    znetPeer = zNet.GetPeerByPlayerName(user);
                 }
                 if (znetPeer != null)
                 {
@@ -128,7 +130,7 @@ namespace ValheimBetterServerConfig
                 }
                 else
                 {
-                    print("incorrect player name");
+                    print("Incorrect player name: " + user);
                 }
             }
             else
@@ -141,14 +143,15 @@ namespace ValheimBetterServerConfig
         {
             if (UserSupplied(args))
             {
-                ZNetPeer peerByPlayerName = zNet.GetPeerByPlayerName(args[1]);
+                string user = rebuildString(args);
+                ZNetPeer peerByPlayerName = zNet.GetPeerByPlayerName(user);
                 if (peerByPlayerName != null)
                 {
-                    args[1] = peerByPlayerName.m_socket.GetHostName();
+                    user = peerByPlayerName.m_socket.GetHostName();
                 }
-                print("Banning user " + args[1]);
+                print("Banning user " + user);
                 SyncedList bannedPlayers = (SyncedList)AccessTools.Field(typeof(ZNet), "m_bannedList").GetValue(zNet);
-                bannedPlayers.Add(args[1]);
+                bannedPlayers.Add(user);
                 AccessTools.Field(typeof(ZNet), "m_bannedList").SetValue(zNet, bannedPlayers);
             }
             else
@@ -161,9 +164,10 @@ namespace ValheimBetterServerConfig
         {
             if (UserSupplied(args))
             {
-                print("Unbanning user " + args[1]);
+                string user = rebuildString(args);
+                print("Unbanning user " + user);
                 SyncedList bannedPlayers = (SyncedList)AccessTools.Field(typeof(ZNet), "m_bannedList").GetValue(zNet);
-                bannedPlayers.Remove(args[1]);
+                bannedPlayers.Remove(user);
                 AccessTools.Field(typeof(ZNet), "m_bannedList").SetValue(zNet, bannedPlayers);
             }
             else
@@ -297,7 +301,6 @@ namespace ValheimBetterServerConfig
         {
             if (args.Length < 1 && args[1].IsNullOrWhiteSpace())
             {
-
                 print("No or incorrect user supplied");
                 return false;
             }
@@ -314,7 +317,7 @@ namespace ValheimBetterServerConfig
             int num = 0;
             try
             {
-                num = int.Parse(args[1].Substring(11));
+                num = int.Parse(args[1]);
             }
             catch
             {
@@ -333,7 +336,7 @@ namespace ValheimBetterServerConfig
         private void Memory(string[] args)
         {
             long totalMemory = GC.GetTotalMemory(false);
-            print("Total allocated mem: " + (totalMemory / 1048576L).ToString("0") + "mb");
+            print("Total allocated memory: " + (totalMemory / 1048576L).ToString("0") + "mb");
         }
 
         private void Shutdown(string[] args)
@@ -345,7 +348,6 @@ namespace ValheimBetterServerConfig
 
         private void Sleep(string[] args)
         {
-            print("Time fast fowarded to the morning");
             EnvMan.instance.SkipToMorning();
         }
 
@@ -377,7 +379,7 @@ namespace ValheimBetterServerConfig
         private string rebuildString(string[] args)
         {
             args[0] = "";
-            return String.Concat(args, " ").Trim();
+            return String.Join(" ", args).Trim();
         }
     }
 }
