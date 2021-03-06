@@ -38,7 +38,7 @@ Enabled = false
 
 ### Changes
 
-##### v0.0.80
+##### v0.0.80(unreleased)
 - Added new console commands:
 	* online - show list of online players and theyr steamID (Thanks to Energritz)
 
