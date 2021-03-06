@@ -40,10 +40,10 @@ namespace ValheimBetterServerConfig
         {
             if (color.ToUpper().Contains("RANDOM"))
             {
-                return  "<color=" + randomColor(new Random()) + ">" + text + "</color>";
+                return $"<color={randomColor(new Random())}>{text}</color>";
             }
 
-            return "<color=" + color.ToUpper() + ">" + text + "</color>";
+            return $"<color={color.ToUpper()}>{text}</color>";
         }
 
         public string randomColor(Random random)
