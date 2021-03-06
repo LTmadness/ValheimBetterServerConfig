@@ -8,9 +8,10 @@ namespace ValheimBetterServerConfig
 {
     class ConsoleCommands
     {
+
         private static Dictionary<string, string> commands = new Dictionary<string, string>();
         private static Dictionary<string, string> hint = new Dictionary<string, string>();
-
+        
         private ZNet zNet;
         private ConfigTool config;
 
@@ -77,6 +78,9 @@ namespace ValheimBetterServerConfig
             commands.Add("yell", "Yell");
             hint.Add("yell", "yell [message] - to shout something as server");
 
+            //commands.Add("whisper", "Whisper");
+            //hint.Add("whisper", "whisper [name] [message] - whisper something to a single player");
+
             commands.Add("config", "Config");
             hint.Add("config", "config - shows all what is set on your settings");
 
@@ -95,8 +99,16 @@ namespace ValheimBetterServerConfig
                     if (commands.ContainsKey(arg[0].ToLower()))
                     {
                         string method = commands[arg[0].ToLower()];
-                        AccessTools.Method(typeof(ConsoleCommands), method).Invoke(this, new object[] { arg });
-                        return;
+                        bool finished = (bool)AccessTools.Method(typeof(ConsoleCommands), method).Invoke(this, new object[] { arg });
+                        if (finished)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            print(hint[arg[0]]);
+                            return;
+                        }
                     }
                 }
                 print("Invalid command to get all commands please use: " + hint["help"]);
@@ -109,21 +121,41 @@ namespace ValheimBetterServerConfig
             return String.Join(" ", args).Trim();
         }
 
-        public static void print(string text)
+        public void print(string text)
         {
             System.Console.WriteLine(text);
         }
 
-        public static void Help(string[] args)
+        private bool UserSupplied(string[] args)
         {
-            print("Available commands:");
-            foreach(KeyValuePair<string, string> entry in hint)
+            if (args.Length < 1 && args[1].IsNullOrWhiteSpace())
             {
-                print(entry.Value);
+                print("No or incorrect user supplied");
+                return false;
+            }
+            return true;
+        }
+
+        private void SendDisconnect(ZNetPeer peer)
+        {
+            if (peer.m_rpc != null)
+            {
+                print("Sent to " + peer.m_socket.GetEndPointString());
+                peer.m_rpc.Invoke("Disconnect", Array.Empty<object>());
             }
         }
 
-        private void Kick(string[] args)
+        private bool Help(string[] args)
+        {
+            print("Available commands:");
+            foreach (KeyValuePair<string, string> entry in hint)
+            {
+                print(entry.Value);
+            }
+            return true;
+        }
+
+        private bool Kick(string[] args)
         {
             if (UserSupplied(args))
             {
@@ -137,19 +169,17 @@ namespace ValheimBetterServerConfig
                 {
                     print("Kicking " + znetPeer.m_playerName);
                     SendDisconnect(znetPeer);
+                    return true;
                 }
                 else
                 {
-                    print("Incorrect player name: " + user);
+                    return false;
                 }
             }
-            else
-            {
-                print(hint[args[0]]);
-            }
+            return false;
         }
 
-        private void Ban(string[] args)
+        private bool Ban(string[] args)
         {
             if (UserSupplied(args))
             {
@@ -163,14 +193,12 @@ namespace ValheimBetterServerConfig
                 SyncedList bannedPlayers = (SyncedList)AccessTools.Field(typeof(ZNet), "m_bannedList").GetValue(zNet);
                 bannedPlayers.Add(user);
                 AccessTools.Field(typeof(ZNet), "m_bannedList").SetValue(zNet, bannedPlayers);
+                return true;
             }
-            else
-            {
-                print(hint[args[0]]);
-            }
+            return false;
         }
 
-        private void Unban(string[] args)
+        private bool Unban(string[] args)
         {
             if (UserSupplied(args))
             {
@@ -179,14 +207,12 @@ namespace ValheimBetterServerConfig
                 SyncedList bannedPlayers = (SyncedList)AccessTools.Field(typeof(ZNet), "m_bannedList").GetValue(zNet);
                 bannedPlayers.Remove(user);
                 AccessTools.Field(typeof(ZNet), "m_bannedList").SetValue(zNet, bannedPlayers);
+                return true;
             }
-            else
-            {
-                print(hint[args[0]]);
-            }
+            return false;
         }
 
-        private void Permit(string[] args)
+        private bool Permit(string[] args)
         {
             if (UserSupplied(args))
             {
@@ -200,14 +226,12 @@ namespace ValheimBetterServerConfig
                 SyncedList permittedPlayers = (SyncedList)AccessTools.Field(typeof(ZNet), "m_permittedList").GetValue(zNet);
                 permittedPlayers.Add(user);
                 AccessTools.Field(typeof(ZNet), "m_permittedList").SetValue(zNet, permittedPlayers);
+                return true;
             }
-            else
-            {
-                print(hint[args[0]]);
-            }
+            return false;
         }
 
-        private void UnPermit(string[] args)
+        private bool UnPermit(string[] args)
         {
             if (UserSupplied(args))
             {
@@ -216,14 +240,12 @@ namespace ValheimBetterServerConfig
                 SyncedList permittedPlayers = (SyncedList)AccessTools.Field(typeof(ZNet), "m_permittedList").GetValue(zNet);
                 permittedPlayers.Remove(user);
                 AccessTools.Field(typeof(ZNet), "m_permittedList").SetValue(zNet, permittedPlayers);
+                return true;
             }
-            else
-            {
-                print(hint[args[0]]);
-            }
+            return false;
         }
 
-        private void AddAdmin(string[] args)
+        private bool AddAdmin(string[] args)
         {
             if (UserSupplied(args))
             {
@@ -237,14 +259,12 @@ namespace ValheimBetterServerConfig
                 SyncedList adminList = (SyncedList)AccessTools.Field(typeof(ZNet), "m_adminList").GetValue(zNet);
                 adminList.Add(user);
                 AccessTools.Field(typeof(ZNet), "m_adminList").SetValue(zNet, adminList);
+                return true;
             }
-            else
-            {
-                print(hint[args[0]]);
-            }
+            return false;
         }
 
-        private void RemoveAdmin(string[] args)
+        private bool RemoveAdmin(string[] args)
         {
             if (UserSupplied(args))
             {
@@ -258,23 +278,12 @@ namespace ValheimBetterServerConfig
                 SyncedList adminList = (SyncedList)AccessTools.Field(typeof(ZNet), "m_adminList").GetValue(zNet);
                 adminList.Remove(user);
                 AccessTools.Field(typeof(ZNet), "m_adminList").SetValue(zNet, adminList);
+                return true;
             }
-            else
-            {
-                print(hint[args[0]]);
-            }
+            return false;
         }
 
-        private void SendDisconnect(ZNetPeer peer)
-        {
-            if (peer.m_rpc != null)
-            {
-                print("Sent to " + peer.m_socket.GetEndPointString());
-                peer.m_rpc.Invoke("Disconnect", Array.Empty<object>());
-            }
-        }
-
-        private void printBanned(string[] args)
+        private bool printBanned(string[] args)
         {
             print("Ban player steam IDs/IPs:");
             SyncedList ids = (SyncedList)AccessTools.Field(typeof(ZNet), "m_bannedList").GetValue(zNet);
@@ -283,9 +292,10 @@ namespace ValheimBetterServerConfig
             {
                 print(id);
             }
+            return true;
         }
 
-        private void printPermitted(string[] args)
+        private bool printPermitted(string[] args)
         {
             print("Permited player steam IDs/IPs:");
             SyncedList ids = (SyncedList)AccessTools.Field(typeof(ZNet), "m_permittedList").GetValue(zNet);
@@ -294,9 +304,10 @@ namespace ValheimBetterServerConfig
             {
                 print(id);
             }
+            return true;
         }
 
-        private void printAdmins(string[] args)
+        private bool printAdmins(string[] args)
         {
             print("Admin ids:");
             SyncedList ids = (SyncedList)AccessTools.Field(typeof(ZNet), "m_adminList").GetValue(zNet);
@@ -305,90 +316,153 @@ namespace ValheimBetterServerConfig
             {
                 print(id);
             }
-        }
-
-        private bool UserSupplied(string[] args)
-        {
-            if (args.Length < 1 && args[1].IsNullOrWhiteSpace())
-            {
-                print("No or incorrect user supplied");
-                return false;
-            }
             return true;
         }
 
-        private void Save(string[] args)
+        private bool Save(string[] args)
         {
             zNet.Save(false);
+            return true;
         }
 
-        private void Difficulty(string[] args)
+        private bool Difficulty(string[] args)
         {
             int num = 0;
             try
             {
                 num = int.Parse(args[1]);
+                if (num >= 1)
+                {
+                    Game.instance.SetForcePlayerDifficulty(num);
+                    print("Setting players to " + num);
+                    return true;
+                }
             }
             catch
             {
-                print("Number was incorrect");
-                return;
+                return false;
             }
-
-            if (num >= 1)
-            {
-                Game.instance.SetForcePlayerDifficulty(num);
-                print("Setting players to " + num);
-            }
-
+            return false;
         }
 
-        private void Memory(string[] args)
+        private bool Memory(string[] args)
         {
             long totalMemory = GC.GetTotalMemory(false);
             print("Total allocated memory: " + (totalMemory / 1048576L).ToString("0") + "mb");
+            return true;
         }
 
-        private void Shutdown(string[] args)
+        private bool Shutdown(string[] args)
         {
             zNet.Save(true);
             Application.Quit();
             System.Console.Out.Close();
+            return true;
         }
 
-        private void Sleep(string[] args)
+        private bool Sleep(string[] args)
         {
             EnvMan.instance.SkipToMorning();
+            return true;
         }
 
-        private void Say(string[] args)
+        private bool Say(string[] args)
         {
-            string message = rebuildString(args);
-            string username = config.Username;
-            ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "ChatMessage", new object[] { new Vector3(), 1, username, message });
-            print(username + ": " + message);
+            if (args.Length > 1)
+            {
+                string message = rebuildString(args);
+                string username = config.Username;
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "ChatMessage", new object[] { new Vector3(), 1, username, message });
+                print(username + " said " + message);
+                return true;
+            }
+            return false;
         }
 
-        private void Yell(string[] args)
+        private bool Yell(string[] args)
         {
-            string message = rebuildString(args);
-            string username = config.Username;
-            ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "ChatMessage", new object[] { new Vector3(), 2, username, message });
-            print(username + ": " + message);
+            if (args.Length > 1)
+            {
+                string message = rebuildString(args);
+                string username = config.Username;
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "ChatMessage", new object[] { new Vector3(), 2, username, message });
+                print(username + " yelled " + message);
+                return true;
+            }
+            return false;
         }
 
-        private void Config(string[] args)
+ /*       private bool Whisper(string[] args)
+        {
+            int userNumber = 1;
+            if (args.Length > 2)
+            {
+                Vector3 pos = new Vector3();
+                Vector3 refPos = pos;
+                string username = "";
+
+                List<ZNetPeer> players = (List<ZNetPeer>)AccessTools.Field(typeof(ZRoutedRpc), "m_peers").GetValue(ZRoutedRpc.instance);
+
+                if (players != null && players.Count <= 0)
+                {
+                    print("No players online");
+                    return true;
+                }
+
+                while (pos.Equals(refPos) && userNumber < args.Length)
+                {
+                    if(userNumber == 1)
+                    {
+                        username += args[userNumber].ToLower();
+                    }
+                    else
+                    {
+                        username += " " + args[userNumber].ToLower();
+                    }
+                    
+                    foreach (ZNetPeer player in players)
+                    {
+                        if (player.m_playerName.ToLower().Equals(username))
+                        {
+                            pos = player.GetRefPos();
+                        }
+                    }
+                    userNumber++;
+                }
+
+                if (!pos.Equals(refPos))
+                {
+                    for (int i = 0; i < userNumber; i++)
+                    {
+                        args[i] = "";
+                    }
+
+                    string message = rebuildString(args);
+
+                    ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "Say", new object[] { pos, 0, config.Username, message });
+                    print(username + " whispered " + message);
+                    return true;
+                }
+                else
+                {
+                    print("No user found");
+                }
+            }
+            return false;
+        }*/
+
+        private bool Config(string[] args)
         {
             print("Your current settings:");
             foreach (string conf in config.getList())
             {
                 print(conf);
             }
+            return true;
         }
 
-        private void Online(string[] args)
+        private bool Online(string[] args)
         {
-
             List<ZNet.PlayerInfo> players = (List<ZNet.PlayerInfo>)AccessTools.Field(typeof(ZNet), "m_players").GetValue(zNet);
             if (players.Count > 0)
             {
@@ -404,6 +478,7 @@ namespace ValheimBetterServerConfig
             {
                 print("No players currently online");
             }
+            return true;
         }
     }
 }

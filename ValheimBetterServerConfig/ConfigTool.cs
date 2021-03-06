@@ -38,6 +38,9 @@ namespace ValheimBetterServerConfig
         //Console settings
         private ConfigEntry<string> serverUsername;
 
+        private ConfigEntry<bool> showChatYell;
+        //private ConfigEntry<bool> showChatAll;
+
         private string name;
 
         public ConfigTool(ConfigFile config) 
@@ -68,6 +71,8 @@ namespace ValheimBetterServerConfig
 
             //Console settings
             serverUsername = config.Bind<string>(CONSOLE_SETTINGS, "Server username", "Server", "Used as sender name when using say/yell commands in server console");
+            showChatYell = config.Bind<bool>(CONSOLE_SETTINGS, "Show chat shout", false, "Show what eveyone shouts (/s) in console");
+            //showChatAll = config.Bind<bool>(CONSOLE_SETTINGS, "Show chat", true, "Show all chat in console, overwrites show chat shout option");
 
             if(!serverNameColor.Value.IsNullOrWhiteSpace() && !helper.hasColor(serverName.Value))
             {
@@ -101,6 +106,8 @@ namespace ValheimBetterServerConfig
         public int NumberOfBackups { get => numberOfBackups.Value; }
         public bool Visable { get => visable.Value; }
         public string Username { get => serverUsername.Value; }
+        public bool ShowChatYell { get => showChatYell.Value/* || showChatAll.Value*/; }
+        //public bool ShowChat { get => showChatAll.Value; }
 
         public List<string> getList()
         {
@@ -116,6 +123,8 @@ namespace ValheimBetterServerConfig
             data.Add("Steam map name: " + SteamMapName);
             data.Add("Number of backups: " + numberOfBackups.Value);
             data.Add("Server username: " + serverUsername.Value);
+            data.Add("Show shouts in console: " + ShowChatYell);
+            //data.Add("Show all chat in console: " + showChatAll.Value);
 
             return data;
         }

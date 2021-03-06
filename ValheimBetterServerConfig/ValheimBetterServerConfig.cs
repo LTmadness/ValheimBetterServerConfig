@@ -17,7 +17,7 @@ namespace ValheimBetterServerConfig
     {
         public const string GUID = "org.ltmadness.valheim.betterserverconfig";
         public const string NAME = "Better Server Config";
-        public const string VERSION = "0.0.70";
+        public const string VERSION = "0.0.80";
 
         private static ConfigTool config;
         private static Helper helper = new Helper();
@@ -31,14 +31,9 @@ namespace ValheimBetterServerConfig
 
         public bool runConsole = true;
 
-        public void Awake()
+        public async void Start()
         {
-            
-            config = new ConfigTool(Config);
-
-            Harmony.CreateAndPatchAll(typeof(ValheimBetterServerConfig), GUID);
-
-            Task.Run(async () =>
+            await Task.Run(() =>
             {
                 while ((zNet == null) || !serverInisialised)
                 {
@@ -54,6 +49,14 @@ namespace ValheimBetterServerConfig
                 }
             });
         }
+
+        public void Awake()
+        {
+            config = new ConfigTool(Config);
+            Harmony.CreateAndPatchAll(typeof(ValheimBetterServerConfig), GUID);
+
+        }
+
 
         [HarmonyPatch(typeof(FejdStartup), "ParseServerArguments")]
         [HarmonyPrefix]
@@ -133,7 +136,8 @@ namespace ValheimBetterServerConfig
         public static void saveExtraBackups(bool sync)
         {
             int numberOfBackups = config.NumberOfBackups * saveTypes.Count();
-            if (numberOfBackups > 0) { 
+            if (numberOfBackups > 0)
+            {
                 string timeNow = (DateTime.Now.ToShortDateString().Replace("/", "-") + "-" + DateTime.Now.ToShortTimeString().Replace(":", "-")).Replace(" ", "");
                 string worldName = config.WorldName;
                 string worldLocation = Utils.GetSaveDataPath() + "/worlds";
@@ -168,9 +172,22 @@ namespace ValheimBetterServerConfig
 
         [HarmonyPatch(typeof(DungeonDB), "Start")]
         [HarmonyPostfix]
-        public static void Start()
+        public static void Start_DungeonDB()
         {
             serverInisialised = true;
+        }
+
+        [HarmonyPatch(typeof(Chat), "OnNewChatMessage")]
+        [HarmonyPostfix]
+        public static void OnNewChatMessage(GameObject go, long senderID, Vector3 pos, Talker.Type type, string user, string text)
+        {
+            if (!user.Equals(config.Username) && config.ShowChatYell)
+            {
+                if (type == Talker.Type.Shout)
+                {
+                    console.print(user + " yelled " + text);
+                }
+            }
         }
     }
 }
