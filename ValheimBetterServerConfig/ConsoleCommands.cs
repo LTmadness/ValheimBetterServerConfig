@@ -24,6 +24,7 @@ namespace ValheimBetterServerConfig
         private void registerCommands()
         {
             commands.Add("help", "Help");
+            hint.Add("help", "help - get list of all commands");
 
             commands.Add("kick", "Kick");
             hint.Add("kick", "kick [name/ip/userID] - kick user");
@@ -78,6 +79,9 @@ namespace ValheimBetterServerConfig
 
             commands.Add("config", "Config");
             hint.Add("config", "config - shows all what is set on your settings");
+
+            commands.Add("online", "Online");
+            hint.Add("online", "online - display list of players online");
         }
 
         public void runCommand(string text)
@@ -95,8 +99,19 @@ namespace ValheimBetterServerConfig
                         return;
                     }
                 }
-                print("Invalid command to get all commands please use: help");
+                print("Invalid command to get all commands please use: " + hint["help"]);
             }
+        }
+
+        private string rebuildString(string[] args)
+        {
+            args[0] = "";
+            return String.Join(" ", args).Trim();
+        }
+
+        public static void print(string text)
+        {
+            System.Console.WriteLine(text);
         }
 
         public static void Help(string[] args)
@@ -106,11 +121,6 @@ namespace ValheimBetterServerConfig
             {
                 print(entry.Value);
             }
-        }
-
-        public static void print(string text)
-        {
-            System.Console.WriteLine(text);
         }
 
         private void Kick(string[] args)
@@ -376,10 +386,24 @@ namespace ValheimBetterServerConfig
             }
         }
 
-        private string rebuildString(string[] args)
+        private void Online(string[] args)
         {
-            args[0] = "";
-            return String.Join(" ", args).Trim();
+
+            List<ZNet.PlayerInfo> players = (List<ZNet.PlayerInfo>)AccessTools.Field(typeof(ZNet), "m_players").GetValue(zNet);
+            if (players.Count > 0)
+            {
+                print("Players currently online:");
+                int counter = 1;
+                foreach (ZNet.PlayerInfo player in players)
+                {
+                    print(counter + ". " + player.m_name + " - " + player.m_host);
+                    counter++;
+                }
+            }
+            else
+            {
+                print("No players currently online");
+            }
         }
     }
 }

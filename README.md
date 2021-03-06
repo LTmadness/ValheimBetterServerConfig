@@ -25,7 +25,22 @@ If you would like to support me you can do it here: https://streamlabs.com/ltmad
 Yes, you need <b>BepInEx</b>, to install simple drop the ValheimBetterServerConfig.dll into BepInEx/plugins,
 Config file will be generated after first server start
 
+<b>How to fix duplicate console lines?</b>
+
+Go to BepInEx config file (<Valheim_dedicated_server>/BepInEx/config/BepInEx.cfg)
+Find secrion named [Logging.Console] find setting called Enabled, and set it to false eg:
+
+[Logging.Console]
+Enables showing a console for log output.
+Setting type: Boolean
+Default value: false
+Enabled = false
+
 ### Changes
+
+##### v0.0.80
+- Added new console commands:
+	* online - show list of online players and theyr steamID (Thanks to Energritz)
 
 ##### v0.0.70
 - Reworked command system

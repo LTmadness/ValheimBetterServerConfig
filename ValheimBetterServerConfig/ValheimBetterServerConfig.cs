@@ -33,6 +33,7 @@ namespace ValheimBetterServerConfig
 
         public void Awake()
         {
+            
             config = new ConfigTool(Config);
 
             Harmony.CreateAndPatchAll(typeof(ValheimBetterServerConfig), GUID);
