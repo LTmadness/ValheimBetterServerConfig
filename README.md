@@ -1,4 +1,4 @@
-# ValheimBetterServerConfig
+#BetterServerConfig
 This is a simple mod to make your life easier configuring your valheim server.
 
 ## Features
@@ -8,9 +8,6 @@ Extra configurable settings added to what is already accessible to you in valhei
 Bash console commands that you can run without going into the game, 
 full list of commands can be found using command - help
 Automated backup system with configurable amount of saves
-
-## Skill/Experience
-I usually code in Java so please don't judge me too much for my c# skills :D also, this is my first mod ever :D
 
 ### Support
 If you would like to support me you can do it here: https://streamlabs.com/ltmadness/tip
@@ -38,24 +35,26 @@ Enabled = false
 
 ### Changes
 
-##### v0.0.80(unreleased)
-- Added new console commands:
+##### v0.0.80
+- New console commands:
 	* online - show list of online players and theyr steamID (Thanks to Energritz)
+- New config option:
+	* Show shout chat - when enables console displays shouts (/s messages) in console
+- Small fixes and optimisations
 
 ##### v0.0.70
-- Reworked command system
-- Fixed Shutdown command
-- Fixed visible setting
-
+- New command system
+- Fix for Shutdown command
+- Fix for visible setting
 
 ##### v0.0.60
-- Added new commands:
+- New console commands:
 	* say - to say something to players in server as server
 	* yell - to shout something at players in server as server
 	* config - displays all of the information you have set in config as a list
-- Added new config option:
+- New config option:
 	* Server Username - the name thats displayed for a server when say/yell command used
-- Fixed shutdown command
+- Fix for shutdown command
 - Small fixes and optimisations
 
 ##### v0.0.55
@@ -65,10 +64,10 @@ Enabled = false
 - Added configurable backup system that puts set amount of backups(1 per save) into folder with your world name
 - Added new command for server bash console:
 	* sleep - fast forward to next morning
-- Code cleanup/fixes
+- Small fixes and optimisations
 
 ##### v0.0.40
-- Added even more commands to bash console:
+- New console commands:
 	* unpermit [ip/userID] - remove user from permitted user list
 	* addAdmin [userID] - add user to admin list
 	* removeAdmin [userID] - remove user from admin list
@@ -76,14 +75,4 @@ Enabled = false
 	* save - save server
 	* shutdown - shutdown the server
 	* difficulty [nr] - force difficulty
-- Small fixes
-
-##### v0.0.30
-- Added console commands that can be run from server side using bash console:
-	* kick [name/ip/userID] - kick user
-	* ban [name/ip/userID] - ban user
-	* unban [ip/userID] - unban user
-	* banned - list banned users
-	* permit [ip/userID] - add user to permitted user list
-	* permitted - list permitted users
 - Small fixes

@@ -71,7 +71,7 @@ namespace ValheimBetterServerConfig
 
             //Console settings
             serverUsername = config.Bind<string>(CONSOLE_SETTINGS, "Server username", "Server", "Used as sender name when using say/yell commands in server console");
-            showChatYell = config.Bind<bool>(CONSOLE_SETTINGS, "Show chat shout", false, "Show what eveyone shouts (/s) in console");
+            showChatYell = config.Bind<bool>(CONSOLE_SETTINGS, "Show shout chat", true, "Show what eveyone shouts (/s) in console");
             //showChatAll = config.Bind<bool>(CONSOLE_SETTINGS, "Show chat", true, "Show all chat in console, overwrites show chat shout option");
 
             if(!serverNameColor.Value.IsNullOrWhiteSpace() && !helper.hasColor(serverName.Value))
