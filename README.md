@@ -1,4 +1,4 @@
-#BetterServerConfig
+# BetterServerConfig
 This is a simple mod to make your life easier configuring your valheim server.
 
 ## Features
