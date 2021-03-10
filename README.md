@@ -34,10 +34,14 @@ Default value: false
 Enabled = false
 
 ### Changes
+##### v0.0.90
+- Improvements on Console command framework
+- Fix for an issue that was braking multiple commands
+- Small fixes and optimisations
 
 ##### v0.0.80
 - New console commands:
-	* online - show list of online players and theyr steamID (Thanks to Energritz)
+	* online - show list of online players and their steamID (Thanks to Energritz)
 - New config option:
 	* Show shout chat - when enables console displays shouts (/s messages) in console
 - Small fixes and optimisations

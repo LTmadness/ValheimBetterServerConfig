@@ -17,13 +17,11 @@ namespace ValheimBetterServerConfig
     {
         public const string GUID = "org.ltmadness.valheim.betterserverconfig";
         public const string NAME = "Better Server Config";
-        public const string VERSION = "0.0.80";
+        public const string VERSION = "0.0.90";
 
         private static ConfigTool config;
         private static Helper helper = new Helper();
         private static ConsoleCommands console;
-
-        private static ZNet zNet;
 
         private static string[] saveTypes = { ".db", ".fwl" };
 
@@ -35,12 +33,12 @@ namespace ValheimBetterServerConfig
         {
             await Task.Run(() =>
             {
-                while ((zNet == null) || !serverInisialised)
+                while ((ZNet.instance == null) || !serverInisialised)
                 {
                     Thread.Sleep(1000);// waiting for zNets  to inisialise
                 }
 
-                console = new ConsoleCommands(zNet, config);
+                console = new ConsoleCommands(config);
 
                 while (runConsole)
                 {
@@ -102,13 +100,6 @@ namespace ValheimBetterServerConfig
 
             __result = helper.isPasswordValid(password, world, config.ServerName);
             return false;
-        }
-
-        [HarmonyPatch(typeof(ZNet), "Awake")]
-        [HarmonyPostfix]
-        public static void Awake_zNet(ZNet __instance)
-        {
-            zNet = __instance;
         }
 
         [HarmonyPatch(typeof(ZSteamMatchmaking), "RegisterServer")]
