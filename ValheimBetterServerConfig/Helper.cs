@@ -1,8 +1,8 @@
-﻿using System;
+﻿using BepInEx;
+using BepInEx.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using BepInEx;
-using BepInEx.Configuration;
 
 namespace ValheimBetterServerConfig
 {

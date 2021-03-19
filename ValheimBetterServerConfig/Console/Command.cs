@@ -1,12 +1,10 @@
-﻿using System;
-
-namespace ValheimBetterServerConfig
+﻿namespace ValheimBetterServerConfig
 {
     class Command
     {
-        private string commandKey;
-        private string hint;
-        private Method method;
+        private readonly string commandKey;
+        private readonly string hint;
+        private readonly Method method;
 
         public Command(string commandKey, string hint, Method method)
         {
@@ -15,18 +13,12 @@ namespace ValheimBetterServerConfig
             this.method = method;
         }
 
-        private Command(string commandKey)
-        {
-            this.commandKey = commandKey;
-        }
-
         public delegate bool Method(string[] args);
-
         public string Key { get => commandKey; }
         public string Hint { get => hint; }
-        public bool Run (string[] args)
+        public bool Run(string[] args)
         {
-            return (bool) method.DynamicInvoke(new object[] { args });
+            return (bool)method.DynamicInvoke(new object[] { args });
         }
     }
 }
