@@ -5,7 +5,7 @@ using UnityEngine;
 namespace ValheimBetterServerConfig.Console
 {
     class Utils
-    { 
+    {
         public static string RebuildString(string[] args)
         {
             args[0] = "";
@@ -32,14 +32,17 @@ namespace ValheimBetterServerConfig.Console
             if (!announcement.IsNullOrWhiteSpace())
             {
                 string username = Runner.Instance.config.Username;
-                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "ChatMessage", new object[] { new Vector3(), 2, username, announcement});
+                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "ChatMessage", new object[] { new Vector3(), 2, username, announcement });
             }
         }
 
         public static void ArgumentSkipped(string[] args)
         {
-            string message = $"Unnececery argument skipped: {args[0]} {RebuildString(args)}";
-            Print(message);
+            string message = RebuildString(args);
+            if (!message.IsNullOrWhiteSpace())
+            {
+                Print($"Unnececery argument skipped: {message}");
+            }
         }
     }
 }

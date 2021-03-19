@@ -14,12 +14,11 @@
         }
 
         public delegate bool Method(string[] args);
-
         public string Key { get => commandKey; }
         public string Hint { get => hint; }
-        public bool Run (string[] args)
+        public bool Run(string[] args)
         {
-            return (bool) method.DynamicInvoke(new object[] { args });
+            return (bool)method.DynamicInvoke(new object[] { args });
         }
     }
 }

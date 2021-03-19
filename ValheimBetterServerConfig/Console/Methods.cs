@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static ValheimBetterServerConfig.Console.Utils;
 using static Utils;
+using Steamworks;
 
 namespace ValheimBetterServerConfig.Console
 {
@@ -34,7 +35,7 @@ namespace ValheimBetterServerConfig.Console
                 }
                 if (znetPeer != null)
                 {
-                    Print("Kicking " + znetPeer.m_playerName);
+                    Print($"Kicking {znetPeer.m_playerName}");
                     znetPeer.m_rpc.Invoke("Disconnect", Array.Empty<object>());
                     zNet.Disconnect(znetPeer);
                     return true;
@@ -58,7 +59,7 @@ namespace ValheimBetterServerConfig.Console
                 {
                     user = peerByPlayerName.m_socket.GetHostName();
                 }
-                Print("Banning user: " + user);
+                Print($"Banning user: {user}");
                 SyncedList bannedPlayers = (SyncedList)AccessTools.Field(typeof(ZNet), "m_bannedList").GetValue(zNet);
                 bannedPlayers.Add(user);
                 AccessTools.Field(typeof(ZNet), "m_bannedList").SetValue(zNet, bannedPlayers);
@@ -73,7 +74,7 @@ namespace ValheimBetterServerConfig.Console
             {
                 string user = RebuildString(args);
                 ZNet zNet = ZNet.instance;
-                Print("Unbanning user: " + user);
+                Print($"Unbanning user: {user}");
                 SyncedList bannedPlayers = (SyncedList)AccessTools.Field(typeof(ZNet), "m_bannedList").GetValue(zNet);
                 bannedPlayers.Remove(user);
                 AccessTools.Field(typeof(ZNet), "m_bannedList").SetValue(zNet, bannedPlayers);
@@ -93,7 +94,7 @@ namespace ValheimBetterServerConfig.Console
                 {
                     user = peerByPlayerName.m_socket.GetHostName();
                 }
-                Print("Permitting user: " + user);
+                Print($"Permitting user: {user}");
                 SyncedList permittedPlayers = (SyncedList)AccessTools.Field(typeof(ZNet), "m_permittedList").GetValue(zNet);
                 permittedPlayers.Add(user);
                 AccessTools.Field(typeof(ZNet), "m_permittedList").SetValue(zNet, permittedPlayers);
@@ -108,7 +109,7 @@ namespace ValheimBetterServerConfig.Console
             {
                 string user = RebuildString(args);
                 ZNet zNet = ZNet.instance;
-                Print("Removing user from permited user list: " + user);
+                Print($"Removing user from permited user list: {user}");
                 SyncedList permittedPlayers = (SyncedList)AccessTools.Field(typeof(ZNet), "m_permittedList").GetValue(zNet);
                 permittedPlayers.Remove(user);
                 AccessTools.Field(typeof(ZNet), "m_permittedList").SetValue(zNet, permittedPlayers);
@@ -128,7 +129,7 @@ namespace ValheimBetterServerConfig.Console
                 {
                     user = peerByPlayerName.m_socket.GetHostName();
                 }
-                Print("Adding player to the admin list: " + user);
+                Print($"Adding player to the admin list: {user}");
                 SyncedList adminList = (SyncedList)AccessTools.Field(typeof(ZNet), "m_adminList").GetValue(zNet);
                 adminList.Add(user);
                 AccessTools.Field(typeof(ZNet), "m_adminList").SetValue(zNet, adminList);
@@ -148,7 +149,7 @@ namespace ValheimBetterServerConfig.Console
                 {
                     user = peerByPlayerName.m_socket.GetHostName();
                 }
-                Print("Removing player from the admin list: " + user);
+                Print($"Removing player from the admin list: {user}");
                 SyncedList adminList = (SyncedList)AccessTools.Field(typeof(ZNet), "m_adminList").GetValue(zNet);
                 adminList.Remove(user);
                 AccessTools.Field(typeof(ZNet), "m_adminList").SetValue(zNet, adminList);
@@ -221,7 +222,7 @@ namespace ValheimBetterServerConfig.Console
                 if (num >= 1)
                 {
                     Game.instance.SetForcePlayerDifficulty(num);
-                    Print("Setting players to " + num);
+                    Print($"Setting players to {num}");
                     return true;
                 }
             }
@@ -236,7 +237,7 @@ namespace ValheimBetterServerConfig.Console
         {
             ArgumentSkipped(args);
             long totalMemory = GC.GetTotalMemory(false);
-            Print("Total allocated memory: " + (totalMemory / 1048576L).ToString("0") + "mb");
+            Print($"Total allocated memory: {totalMemory / 1048576L:0} mb");
             return true;
         }
 
@@ -263,7 +264,7 @@ namespace ValheimBetterServerConfig.Console
                 string message = RebuildString(args);
                 string username = Runner.Instance.config.Username;
                 ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "ChatMessage", new object[] { new Vector3(), 1, username, message });
-                Print(username + " said " + message);
+                Print($"{username} said {message}");
                 return true;
             }
             return false;
@@ -276,7 +277,7 @@ namespace ValheimBetterServerConfig.Console
                 string message = RebuildString(args);
                 string username = Runner.Instance.config.Username;
                 ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "ChatMessage", new object[] { new Vector3(), 2, username, message });
-                Print(username + " yelled " + message);
+                Print($"{username} yelled {message}");
                 return true;
             }
             return false;
@@ -303,7 +304,7 @@ namespace ValheimBetterServerConfig.Console
                 int counter = 1;
                 foreach (ZNet.PlayerInfo player in players)
                 {
-                    Print(counter + ". " + player.m_name + " - " + player.m_host);
+                    Print($"{counter}. {player.m_name} - {player.m_host}");
                     counter++;
                 }
             }
@@ -311,6 +312,13 @@ namespace ValheimBetterServerConfig.Console
             {
                 Print("No players currently online");
             }
+            return true;
+        }
+
+        public static bool IpAddress(string[] args)
+        {
+            ArgumentSkipped(args);
+            Print($"Sever IP: {AccessTools.Method(typeof(ZNet), "GetPublicIP").Invoke(ZNet.instance, new object[] { })}");
             return true;
         }
     }
