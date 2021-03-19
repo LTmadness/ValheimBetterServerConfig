@@ -119,18 +119,19 @@ namespace ValheimBetterServerConfig
         {
             List<string> data = new List<string>();
 
-            data.Add("Server name: " + ServerName);
-            data.Add("Server Port: " + ServerPort);
-            data.Add("World Name: " + WorldName);
-            data.Add("Server password: " + Password);
-            data.Add("Is server visable: " + Visable);
-            data.Add("Server size: " + Size);
-            data.Add("Server save location: " + Location);
-            data.Add("Steam map name: " + SteamMapName);
-            data.Add("Number of backups: " + NumberOfBackups);
-            data.Add("Server username: " + Username);
-            data.Add("Show shouts in console: " + ShowChatYell);
-            //data.Add("Show all chat in console: " + showChatAll.Value);
+            data.Add($"Server name: {ServerName}");
+            data.Add($"Server Port: {ServerPort}");
+            data.Add($"World Name: {WorldName}");
+            data.Add($"Server password: {Password}");
+            data.Add($"Is server visable: {Visable}");
+            data.Add($"Server size: {Size}");
+            data.Add($"Server save location: {Location}");
+            data.Add($"Steam map name: {SteamMapName}");
+            data.Add($"Number of backups: {NumberOfBackups}");
+            data.Add($"Server username: {Username}");
+            data.Add($"Show shouts in console: {ShowChatYell}");
+            data.Add($"Announce saves: {AnnounceSave}");
+            data.Add($"Game description: {GameDescription}");
 
             return data;
         }

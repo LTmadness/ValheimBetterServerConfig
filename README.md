@@ -34,6 +34,15 @@ Default value: false
 Enabled = false
 
 ### Changes
+##### v0.1.0
+- New console commands:
+	* ip - shows server ip in the console
+	* updateLists - force update admin/permitted/banned lists from files
+- New Config option:
+	* Announce saves - announces when the server being saved
+	* Game Description - allows you to choose what you wan't to be writen under Game tab in Steam Server Browser
+- Small fixes and optimisations
+
 ##### v0.0.90
 - Improvements on Console command framework
 - Fix for an issue that was braking multiple commands
@@ -60,23 +69,3 @@ Enabled = false
 	* Server Username - the name thats displayed for a server when say/yell command used
 - Fix for shutdown command
 - Small fixes and optimisations
-
-##### v0.0.55
-- Hot fix for change done in Valheim 0.147.3 update
-
-##### v0.0.50
-- Added configurable backup system that puts set amount of backups(1 per save) into folder with your world name
-- Added new command for server bash console:
-	* sleep - fast forward to next morning
-- Small fixes and optimisations
-
-##### v0.0.40
-- New console commands:
-	* unpermit [ip/userID] - remove user from permitted user list
-	* addAdmin [userID] - add user to admin list
-	* removeAdmin [userID] - remove user from admin list
-	* admins - list of admin user ids
-	* save - save server
-	* shutdown - shutdown the server
-	* difficulty [nr] - force difficulty
-- Small fixes

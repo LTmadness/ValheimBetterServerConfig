@@ -40,8 +40,8 @@ namespace ValheimBetterServerConfig
             commands.Add(new Command("unpermit", "unpermit [ip/steamID] - remove user from permitted user list", UnPermit));
             commands.Add(new Command("addadmin", "addAdmin [steamID] - add user to admin list", AddAdmin));
             commands.Add(new Command("removeadmin", "removeAdmin [steamID] - remove user from admin list", RemoveAdmin));
-            commands.Add(new Command("admins", "removeAdmin [steamID] - remove user from admin list", PrintAdmins));
-            commands.Add(new Command("updateLists", "force updates banned, admin and permited list with data in coresponding files", UpdateFromFile));
+            commands.Add(new Command("admins", "admins - list  of admin steam ids", PrintAdmins));
+            commands.Add(new Command("updateLists", "updateLists - force updates banned, admin and permited list with data in coresponding files", UpdateFromFile));
             commands.Add(new Command("save", "save - save server", Save));
             commands.Add(new Command("difficulty", "difficulty [nr] - force difficulty", Difficulty));
             commands.Add(new Command("memory", "memory - show amount of memory used by server", Memory));

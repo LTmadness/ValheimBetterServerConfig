@@ -37,7 +37,11 @@ namespace ValheimBetterServerConfig.Console
                 {
                     Print($"Kicking {znetPeer.m_playerName}");
                     znetPeer.m_rpc.Invoke("Disconnect", Array.Empty<object>());
-                    zNet.Disconnect(znetPeer);
+                    AccessTools.Method(typeof(ZNet), "ClearPlayerData").Invoke(zNet, new object[] { znetPeer });
+                    List<ZNetPeer> peers = (List<ZNetPeer>)AccessTools.Field(typeof(ZNet), "m_peers").GetValue(zNet);
+                    peers.Remove(znetPeer);
+                    AccessTools.Field(typeof(ZNet), "m_peers").SetValue(zNet, peers);
+                    znetPeer.Dispose();
                     return true;
                 }
                 else
