@@ -28,22 +28,23 @@ namespace ValheimBetterServerConfig
         //Advanced settings
         private ConfigEntry<string> serverNameColor;
         private ConfigEntry<string> steamMapName;
+        private ConfigEntry<string> serverUsername;
+        private ConfigEntry<string> gameDescription;
 
         private ConfigEntry<bool> serverNameItalic;
         private ConfigEntry<bool> serverNameBold;
+        private ConfigEntry<bool> announceSave;
 
         private ConfigEntry<int> numberOfBackups;
         private ConfigEntry<int> serverSize;
 
         //Console settings
-        private ConfigEntry<string> serverUsername;
-
         private ConfigEntry<bool> showChatYell;
         //private ConfigEntry<bool> showChatAll;
 
         private string name;
 
-        public ConfigTool(ConfigFile config) 
+        public ConfigTool(ConfigFile config)
         {
             ConfigTool.config = config;
             loadConfig();
@@ -68,13 +69,17 @@ namespace ValheimBetterServerConfig
             serverNameBold = config.Bind<bool>(ADVANCED_SETTINGS, "Server name bold", false, "Should your server name be writen in bold, doesn't work on steam server browser");
             steamMapName = config.Bind<string>(ADVANCED_SETTINGS, "Steam Map name", "", "If empty world name will be used");
             numberOfBackups = config.Bind<int>(ADVANCED_SETTINGS, "Number of backups", 5, "Number of backups you wanna keep");
+            serverUsername = config.Bind<string>(ADVANCED_SETTINGS, "Server username", "Server", "Used as sender name when using say/yell commands in server console");
+            announceSave = config.Bind<bool>(ADVANCED_SETTINGS, "Announce saves", false, "Should server announce in game chat when the world save is happening");
+            gameDescription = config.Bind<string>(ADVANCED_SETTINGS, "Game Description", "Valheim", "Text that will be shown as Game in Steam Browser, changing this does not affect under which game server will apear");
 
             //Console settings
-            serverUsername = config.Bind<string>(CONSOLE_SETTINGS, "Server username", "Server", "Used as sender name when using say/yell commands in server console");
             showChatYell = config.Bind<bool>(CONSOLE_SETTINGS, "Show shout chat", true, "Show what eveyone shouts (/s) in console");
             //showChatAll = config.Bind<bool>(CONSOLE_SETTINGS, "Show chat", true, "Show all chat in console, overwrites show chat shout option");
 
-            if(!serverNameColor.Value.IsNullOrWhiteSpace() && !helper.hasColor(serverName.Value))
+            config.Save();
+
+            if (!serverNameColor.Value.IsNullOrWhiteSpace() && !helper.hasColor(serverName.Value))
             {
                 name = helper.setColor(serverName.Value, serverNameColor.Value);
             }
@@ -83,30 +88,31 @@ namespace ValheimBetterServerConfig
                 name = serverName.Value;
             }
 
-            if(serverNameItalic.Value)
+            if (serverNameItalic.Value)
             {
                 name = "<i>" + name + "</i>";
             }
 
-            if(serverNameBold.Value)
+            if (serverNameBold.Value)
             {
                 name = "<b>" + name + "</b>";
             }
-
-            config.Save();
         }
 
         public string ServerName { get => name; }
         public int ServerPort { get => serverPort.Value; }
-        public string WorldName{ get => worldName.Value; }
-        public string Password{ get => password.Value; }
+        public string WorldName { get => worldName.Value; }
+        public string Password { get => password.Value; }
         public int Size { get => serverSize.Value; }
         public string Location { get => saveLocation.Value; }
-        public string SteamMapName{ get => steamMapName.Value.IsNullOrWhiteSpace() ? worldName.Value : steamMapName.Value; }
+        public string SteamMapName { get => steamMapName.Value.IsNullOrWhiteSpace() ? worldName.Value : steamMapName.Value; }
         public int NumberOfBackups { get => numberOfBackups.Value; }
         public bool Visable { get => visable.Value; }
         public string Username { get => serverUsername.Value; }
+        public string GameDescription { get => gameDescription.Value; }
+        public bool AnnounceSave { get => announceSave.Value; }
         public bool ShowChatYell { get => showChatYell.Value/* || showChatAll.Value*/; }
+
         //public bool ShowChat { get => showChatAll.Value; }
 
         public List<string> getList()

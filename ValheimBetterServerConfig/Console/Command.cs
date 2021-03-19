@@ -1,23 +1,16 @@
-﻿using System;
-
-namespace ValheimBetterServerConfig
+﻿namespace ValheimBetterServerConfig
 {
     class Command
     {
-        private string commandKey;
-        private string hint;
-        private Method method;
+        private readonly string commandKey;
+        private readonly string hint;
+        private readonly Method method;
 
         public Command(string commandKey, string hint, Method method)
         {
             this.commandKey = commandKey;
             this.hint = hint;
             this.method = method;
-        }
-
-        private Command(string commandKey)
-        {
-            this.commandKey = commandKey;
         }
 
         public delegate bool Method(string[] args);

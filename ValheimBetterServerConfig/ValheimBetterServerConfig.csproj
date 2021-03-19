@@ -33,10 +33,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Command.cs" />
-    <Compile Include="ConsoleCommands.cs" />
+    <Compile Include="Console\Command.cs" />
+    <Compile Include="Console\Runner.cs" />
+    <Compile Include="Console\Methods.cs" />
+    <Compile Include="Console\Utils.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="ConfigTool.cs" />
+    <Compile Include="Patches.cs" />
     <Compile Include="ValheimBetterServerConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
