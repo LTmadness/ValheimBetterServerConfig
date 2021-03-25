@@ -24,7 +24,7 @@ namespace ValheimBetterServerConfig
         private ConfigTool config;
 
         public async void Start()
-        { 
+        {
             await Task.Run(() =>
             {
                 while ((ZNet.instance == null) || !serverInisialised)
@@ -36,8 +36,17 @@ namespace ValheimBetterServerConfig
 
                 while (runConsole)
                 {
-                    string input = System.Console.ReadLine();
-                    console.RunCommand(input);
+                    string input = "";
+                    try
+                    {
+                        input = System.Console.ReadLine();
+                        console.RunCommand(input);
+                    }
+                    catch
+                    {
+                        Console.Utils.Print($"Please don't use {input} as its causing error," +
+                            $" please report it on https://github.com/LTmadness/ValheimBetterServerConfig, please include input command used");
+                    }
                 }
             });
         }

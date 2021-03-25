@@ -90,7 +90,7 @@ namespace ValheimBetterServerConfig
         {
             if (config.AnnounceSave)
             {
-                Console.Utils.Announce("Server is being saved: " + DateTime.Now);
+                Console.Utils.Announce($"Server is being saved: {DateTime.Now}");
             }
 
             int numberOfBackups = config.NumberOfBackups * saveTypes.Count();
@@ -143,7 +143,8 @@ namespace ValheimBetterServerConfig
             {
                 if (type == Talker.Type.Shout)
                 {
-                    Console.Utils.Print(user + " yelled " + text);
+                    Console.Utils
+                           .Print($"{user} yelled {text}");
                 }
             }
         }
