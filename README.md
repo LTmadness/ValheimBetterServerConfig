@@ -10,7 +10,7 @@ full list of commands can be found using command - help
 Automated backup system with configurable amount of saves
 
 ### Support
-If you would like to support me you can do it here: https://streamlabs.com/ltmadness/tip
+If you would like to support me you can do it here: https://www.patreon.com/LTmadness
 
 ### FAQ
 <b>Where to find server config?:</b>
