@@ -52,6 +52,8 @@ namespace ValheimBetterServerConfig
             commands.Add(new Command("config", "config - shows all what is set on your settings", Config));
             commands.Add(new Command("online", "online - display list of players online with their steamIDs", Online));
             commands.Add(new Command("ip", "ip - show server ip", IpAddress));
+            commands.Add(new Command("tps", "tps - display server updates/sec", Tps));
+            commands.Add(new Command("version", "version - prints server version", PrintVersion));
         }
 
         public void RunCommand(string text)

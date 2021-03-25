@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using HarmonyLib;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,7 +12,9 @@ namespace ValheimBetterServerConfig
     {
         public const string GUID = "org.ltmadness.valheim.betterserverconfig";
         public const string NAME = "Better Server Config";
-        public const string VERSION = "0.1.0";
+        public const string VERSION = "0.1.1";
+
+        public static string gameVersion = "NOT SET";
 
         private static Runner console;
 
@@ -22,7 +25,7 @@ namespace ValheimBetterServerConfig
         private ConfigTool config;
 
         public async void Start()
-        {
+        { 
             await Task.Run(() =>
             {
                 while ((ZNet.instance == null) || !serverInisialised)

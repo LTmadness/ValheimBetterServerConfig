@@ -68,6 +68,7 @@ namespace ValheimBetterServerConfig
         public static bool RegisterServer_modded(/*string name,*/ bool password, string version, bool publicServer,/* string worldName,*/
             ZSteamMatchmaking __instance)
         {
+            ValheimBetterServerConfig.gameVersion = version;
             __instance.UnregisterServer();
             SteamGameServer.SetServerName(config.ServerName);
             SteamGameServer.SetMapName(config.SteamMapName);

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static ValheimBetterServerConfig.Console.Utils;
 using static Utils;
-using Steamworks;
+using static ValheimBetterServerConfig.ValheimBetterServerConfig;
 
 namespace ValheimBetterServerConfig.Console
 {
@@ -205,9 +205,13 @@ namespace ValheimBetterServerConfig.Console
         {
             ArgumentSkipped(args);
             ZNet zNet = ZNet.instance;
-            AccessTools.Field(typeof(ZNet), "m_adminList").SetValue(zNet, new SyncedList(GetSaveDataPath() + "/adminlist.txt", "List admin players ID  ONE per line"));
-            AccessTools.Field(typeof(ZNet), "m_bannedList").SetValue(zNet, new SyncedList(GetSaveDataPath() + " / bannedlist.txt", "List banned players ID  ONE per line"));
-            AccessTools.Field(typeof(ZNet), "m_permittedList").SetValue(zNet, new SyncedList(GetSaveDataPath() + " / permittedlist.txt", "List permitted players ID ONE per line"));
+            AccessTools.Field(typeof(ZNet), "m_adminList")
+                       .SetValue(zNet, new SyncedList(GetSaveDataPath() + "/adminlist.txt", "List admin players ID  ONE per line"));
+            AccessTools.Field(typeof(ZNet), "m_bannedList")
+                       .SetValue(zNet, new SyncedList(GetSaveDataPath() + "/bannedlist.txt", "List banned players ID  ONE per line"));
+            AccessTools.Field(typeof(ZNet), "m_permittedList")
+                       .SetValue(zNet, new SyncedList(GetSaveDataPath() + "/permittedlist.txt", "List permitted players ID ONE per line"));
+            Print("Lists refreshed");
             return true;
         }
 
@@ -323,6 +327,21 @@ namespace ValheimBetterServerConfig.Console
         {
             ArgumentSkipped(args);
             Print($"Sever IP: {AccessTools.Method(typeof(ZNet), "GetPublicIP").Invoke(ZNet.instance, new object[] { })}");
+            return true;
+        }
+
+        public static bool Tps(string[] args)
+        {
+            ArgumentSkipped(args);
+            Print($"Server tps: {(1 / Time.deltaTime):F2}");
+            return true;
+        }
+
+        public static bool PrintVersion(string[] args)
+        {
+            ArgumentSkipped(args);
+            Print($"Valheim version: {gameVersion}");
+            Print($"Better Server Config version: {VERSION}");
             return true;
         }
     }

@@ -36,12 +36,12 @@ Enabled = false
 ### Changes
 ##### v0.1.0
 - New console commands:
-	* ip - shows server ip in the console
+	* ip - shows server IP in the console
 	* updateLists - force update admin/permitted/banned lists from files
 - New Config option:
 	* Announce saves - announces when the server being saved
-	* Game Description - allows you to choose what you wan't to be writen under Game tab in Steam Server Browser
-- Small fixes and optimisations
+	* Game Description - allows you to choose what you want to be written under Game tab in Steam Server Browser
+- Small fixes and optimizations
 
 ##### v0.0.90
 - Improvements on Console command framework
