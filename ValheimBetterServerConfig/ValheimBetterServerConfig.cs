@@ -41,11 +41,15 @@ namespace ValheimBetterServerConfig
                     {
                         input = System.Console.ReadLine();
                         console.RunCommand(input);
+                        input = "";
                     }
                     catch
                     {
-                        Console.Utils.Print($"Please don't use {input} as its causing error," +
-                            $" please report it on https://github.com/LTmadness/ValheimBetterServerConfig, please include input command used");
+                        if (!input.IsNullOrWhiteSpace())
+                        {
+                            Console.Utils.Print($"Please don't use {input} as its causing error," +
+                                $" please report it on https://github.com/LTmadness/ValheimBetterServerConfig, please include input command used");
+                        }
                     }
                 }
             });
