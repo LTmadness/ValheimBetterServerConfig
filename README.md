@@ -34,6 +34,12 @@ Default value: false
 Enabled = false
 
 ### Changes
+##### v0.1.1
+- New console commands:
+	* tps - shows server updates/sec
+	* version - show server and better server config version
+- Small fixes
+	
 ##### v0.1.0
 - New console commands:
 	* ip - shows server IP in the console
