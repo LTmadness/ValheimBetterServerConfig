@@ -11,7 +11,9 @@ namespace ValheimBetterServerConfig
     {
         public const string GUID = "org.ltmadness.valheim.betterserverconfig";
         public const string NAME = "Better Server Config";
-        public const string VERSION = "0.1.0";
+        public const string VERSION = "0.1.1";
+
+        public static string gameVersion = "NOT SET";
 
         private static Runner console;
 
@@ -34,8 +36,21 @@ namespace ValheimBetterServerConfig
 
                 while (runConsole)
                 {
-                    string input = System.Console.ReadLine();
-                    console.RunCommand(input);
+                    string input = "";
+                    try
+                    {
+                        input = System.Console.ReadLine();
+                        console.RunCommand(input);
+                        input = "";
+                    }
+                    catch
+                    {
+                        if (!input.IsNullOrWhiteSpace())
+                        {
+                            Console.Utils.Print($"Please don't use {input} as its causing error," +
+                                $" please report it on https://github.com/LTmadness/ValheimBetterServerConfig, please include input command used");
+                        }
+                    }
                 }
             });
         }

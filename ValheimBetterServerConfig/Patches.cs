@@ -68,6 +68,7 @@ namespace ValheimBetterServerConfig
         public static bool RegisterServer_modded(/*string name,*/ bool password, string version, bool publicServer,/* string worldName,*/
             ZSteamMatchmaking __instance)
         {
+            ValheimBetterServerConfig.gameVersion = version;
             __instance.UnregisterServer();
             SteamGameServer.SetServerName(config.ServerName);
             SteamGameServer.SetMapName(config.SteamMapName);
@@ -89,7 +90,7 @@ namespace ValheimBetterServerConfig
         {
             if (config.AnnounceSave)
             {
-                Console.Utils.Announce("Server is being saved: " + DateTime.Now);
+                Console.Utils.Announce($"Server is being saved: {DateTime.Now}");
             }
 
             int numberOfBackups = config.NumberOfBackups * saveTypes.Count();
@@ -142,7 +143,8 @@ namespace ValheimBetterServerConfig
             {
                 if (type == Talker.Type.Shout)
                 {
-                    Console.Utils.Print(user + " yelled " + text);
+                    Console.Utils
+                           .Print($"{user} yelled {text}");
                 }
             }
         }
