@@ -31,7 +31,7 @@ namespace ValheimBetterServerConfig.Console
                 ZNetPeer znetPeer = zNet.GetPeerByHostName(user);
                 if (znetPeer == null)
                 {
-                    znetPeer = zNet.GetPeerByPlayerName(user);
+                    znetPeer = Helper.GetPeerByPlayerName(user);
                 }
                 if (znetPeer != null)
                 {
@@ -46,6 +46,7 @@ namespace ValheimBetterServerConfig.Console
                 }
                 else
                 {
+                    Console.Utils.Print($"User \"{user}\" not found");
                     return false;
                 }
             }
@@ -58,7 +59,7 @@ namespace ValheimBetterServerConfig.Console
             {
                 string user = RebuildString(args);
                 ZNet zNet = ZNet.instance;
-                ZNetPeer peerByPlayerName = zNet.GetPeerByPlayerName(user);
+                ZNetPeer peerByPlayerName = Helper.GetPeerByPlayerName(user);
                 if (peerByPlayerName != null)
                 {
                     user = peerByPlayerName.m_socket.GetHostName();
@@ -93,7 +94,7 @@ namespace ValheimBetterServerConfig.Console
             {
                 string user = RebuildString(args);
                 ZNet zNet = ZNet.instance;
-                ZNetPeer peerByPlayerName = zNet.GetPeerByPlayerName(user);
+                ZNetPeer peerByPlayerName = Helper.GetPeerByPlayerName(user);
                 if (peerByPlayerName != null)
                 {
                     user = peerByPlayerName.m_socket.GetHostName();
@@ -128,7 +129,7 @@ namespace ValheimBetterServerConfig.Console
             {
                 string user = RebuildString(args);
                 ZNet zNet = ZNet.instance;
-                ZNetPeer peerByPlayerName = zNet.GetPeerByPlayerName(user);
+                ZNetPeer peerByPlayerName = Helper.GetPeerByPlayerName(user);
                 if (peerByPlayerName != null)
                 {
                     user = peerByPlayerName.m_socket.GetHostName();
@@ -148,7 +149,7 @@ namespace ValheimBetterServerConfig.Console
             {
                 string user = RebuildString(args);
                 ZNet zNet = ZNet.instance;
-                ZNetPeer peerByPlayerName = zNet.GetPeerByPlayerName(user);
+                ZNetPeer peerByPlayerName = Helper.GetPeerByPlayerName(user);
                 if (peerByPlayerName != null)
                 {
                     user = peerByPlayerName.m_socket.GetHostName();
@@ -211,6 +212,7 @@ namespace ValheimBetterServerConfig.Console
                        .SetValue(zNet, new SyncedList(GetSaveDataPath() + "/bannedlist.txt", "List banned players ID  ONE per line"));
             AccessTools.Field(typeof(ZNet), "m_permittedList")
                        .SetValue(zNet, new SyncedList(GetSaveDataPath() + "/permittedlist.txt", "List permitted players ID ONE per line"));
+            Patches.config.modList = new SyncedList(GetSaveDataPath() + "/permittedlist.txt", "List permitted players ID ONE per line");
             Print("Lists refreshed");
             return true;
         }
@@ -295,7 +297,7 @@ namespace ValheimBetterServerConfig.Console
         {
             ArgumentSkipped(args);
             Print("Your current settings:");
-            foreach (string conf in Runner.Instance.config.getList())
+            foreach (string conf in Runner.Instance.config.GetList())
             {
                 Print(conf);
             }
@@ -342,6 +344,67 @@ namespace ValheimBetterServerConfig.Console
             ArgumentSkipped(args);
             Print($"Valheim version: {gameVersion}");
             Print($"Better Server Config version: {VERSION}");
+            return true;
+        }
+
+        public static bool AddMod(string[] args)
+        {
+            if (UserSupplied(args))
+            {
+                string user = RebuildString(args);
+                ZNetPeer peerByPlayerName = Helper.GetPeerByPlayerName(user);
+                if (peerByPlayerName != null)
+                {
+                    user = peerByPlayerName.m_socket.GetHostName();
+                }
+                Print($"Adding player to the mod list: {user}");
+                Runner.Instance.config.modList.Add(user);
+                return true;
+            }
+            return false;
+        }
+
+        public static bool RemoveMod(string[] args)
+        {
+            if (UserSupplied(args))
+            {
+                string user = RebuildString(args);
+                ZNetPeer peerByPlayerName = Helper.GetPeerByPlayerName(user);
+                if (peerByPlayerName != null)
+                {
+                    user = peerByPlayerName.m_socket.GetHostName();
+                }
+                Print($"Remove player to the mod list: {user}");
+                Runner.Instance.config.modList.Remove(user);
+                return true;
+            }
+            return false;
+        }
+
+        public static bool PrintMods(string[] args)
+        {
+            ArgumentSkipped(args);
+            Print("Mod ids:");
+            List<string> idList = Runner.Instance.config.modList.GetList();
+            foreach (string id in idList)
+            {
+                Print(id);
+            }
+            return true;
+        }
+
+        public static bool PrintModCommands(string[] args)
+        {
+            ArgumentSkipped(args);
+            Print("Commands allowed to moderators:");
+            foreach (string allowed in Patches.config.GetModCommands)
+            {
+                Command command = Runner.Instance.commands.Find(c => c.Key.Equals(allowed));
+                if (command != null)
+                {
+                    Print(command.Hint);
+                }
+            }
             return true;
         }
     }

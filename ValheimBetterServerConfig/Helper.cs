@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -10,7 +11,7 @@ namespace ValheimBetterServerConfig
     {
         private static readonly string colorRegex = "<color=.*?>|<\\/color>";
 
-        public bool isPasswordValid(String password, World world, string serverName)
+        public static bool IsPasswordValid(String password, World world, string serverName)
         {
             if (!password.Equals(""))
             {
@@ -22,7 +23,17 @@ namespace ValheimBetterServerConfig
             }
         }
 
-        public ConfigEntry<string> getValidServerName(ConfigEntry<string> serverName)
+        public static ZNetPeer GetPeerByPlayerName(string name)
+        {
+            foreach (ZNetPeer peer in (List<ZNetPeer>) AccessTools.Field(typeof(ZNet), "m_peers").GetValue(ZNet.instance))
+            {
+                if (peer.IsReady() && peer.m_playerName.ToLower().Equals(name.ToLower()))
+                    return peer;
+            }
+            return (ZNetPeer)null;
+        }
+
+        public static ConfigEntry<string> GetValidServerName(ConfigEntry<string> serverName)
         {
             if (serverName.Value.IsNullOrWhiteSpace())
             {
@@ -31,26 +42,26 @@ namespace ValheimBetterServerConfig
             return serverName;
         }
 
-        public bool hasColor(string text)
+        public static bool HasColor(string text)
         {
             return Regex.IsMatch(text, colorRegex);
         }
 
-        public string setColor(string text, string color)
+        public static string SetColor(string text, string color)
         {
             if (color.ToUpper().Contains("RANDOM"))
             {
-                return $"<color={randomColor(new Random())}>{text}</color>";
+                return $"<color={RandomColor(new Random())}>{text}</color>";
             }
 
             return $"<color={color.ToUpper()}>{text}</color>";
         }
 
-        public string randomColor(Random random)
+        public static string RandomColor(Random random)
         {
             return rainbowColors[random.Next(0, rainbowColors.Count - 1)];
         }
 
-        private List<string> rainbowColors = new List<string> { "Red", "Orange", "Yellow", "Green", "Blue", "Indigo", "Violet" };
+        private static readonly List<string> rainbowColors = new List<string> { "Red", "Orange", "Yellow", "Green", "Blue", "Indigo", "Violet" };
     }
 }
