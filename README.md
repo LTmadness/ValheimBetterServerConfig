@@ -35,16 +35,16 @@ Enabled = false
 
 ### Changes
 ##### v0.1.2
-- New ability to run commans by typing it in a chat and adding '/' before it e.g. /sleep
-- New permision tear - moderator
+- New ability to run commands by typing it in a chat and adding '/' before it e.g. /sleep
+- New permission tear - moderator
 - New console commands:
 	* addMod - add user to moderator list
-	* removeMode - remove user from moderator list
+	* removeMod - remove user from moderator list
 	* mods - print list of moderator steam ids in console
 	* modCommands - list of commands available to moderators
 - New config options:
-	* Show Chat - See in game chat on server console
-	* Commands Allowed for Mods - List of commands allowed to use by moderators using in game chat
+	* Show Chat - See in-game chat on server console
+	* Commands Allowed for Mods - List of commands allowed to use by moderators using in-game chat
 
 ##### v0.1.1
 - New console commands:
