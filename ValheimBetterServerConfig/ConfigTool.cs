@@ -1,19 +1,19 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ValheimBetterServerConfig
 {
     class ConfigTool
     {
-
         private const string DEFAULT_SETTINGS = "Default settings";
         private const string ADVANCED_SETTINGS = "Advanced settings";
         private const string CONSOLE_SETTINGS = "Console settings";
 
         public static ConfigFile config;
 
-        public static Helper helper = new Helper();
+        public SyncedList modList;
 
         //Default settings
         private ConfigEntry<string> serverName;
@@ -40,20 +40,22 @@ namespace ValheimBetterServerConfig
 
         //Console settings
         private ConfigEntry<bool> showChatYell;
-        //private ConfigEntry<bool> showChatAll;
+        private ConfigEntry<bool> showChatAll;
+
+        private List<string> modCommandsList;
 
         private string name;
 
         public ConfigTool(ConfigFile config)
         {
             ConfigTool.config = config;
-            loadConfig();
+            LoadConfig();
         }
 
-        public void loadConfig()
+        public void LoadConfig()
         {
             //default settings
-            serverName = helper.getValidServerName(config.Bind<string>(DEFAULT_SETTINGS, "Server Name", "My Server Name", "Server name, please change, if deleted will say \"Server Name\", if you want tou can use multiple colors example: \n " +
+            serverName = Helper.GetValidServerName(config.Bind<string>(DEFAULT_SETTINGS, "Server Name", "My Server Name", "Server name, please change, if deleted will say \"Server Name\", if you want tou can use multiple colors example: \n " +
                                                                                                                              "<color=RED>Server</color><color=BLUE>Name</color>, or you can do same <i>italc</i> or  <b>bold</b>,\n" +
                                                                                                                              " it doesn't work in steam server browser, also you can find more color names here: https://www.w3schools.com/colors/colors_names.asp"));
             serverPort = config.Bind<int>(DEFAULT_SETTINGS, "Server Port", 2456);
@@ -75,13 +77,14 @@ namespace ValheimBetterServerConfig
 
             //Console settings
             showChatYell = config.Bind<bool>(CONSOLE_SETTINGS, "Show shout chat", true, "Show what eveyone shouts (/s) in console");
-            //showChatAll = config.Bind<bool>(CONSOLE_SETTINGS, "Show chat", true, "Show all chat in console, overwrites show chat shout option");
+            showChatAll = config.Bind<bool>(CONSOLE_SETTINGS, "Show chat", true, "Show all chat in console, overwrites show chat shout option");
+            modCommandsList = config.Bind<string>(CONSOLE_SETTINGS, "Commands Allowed for Mods", "kick,say,save,sleep" , "List of commands allowed to use by mods").Value.ToLower().Split(',').ToList();
 
             config.Save();
 
-            if (!serverNameColor.Value.IsNullOrWhiteSpace() && !helper.hasColor(serverName.Value))
+            if (!serverNameColor.Value.IsNullOrWhiteSpace() && !Helper.HasColor(serverName.Value))
             {
-                name = helper.setColor(serverName.Value, serverNameColor.Value);
+                name = Helper.SetColor(serverName.Value, serverNameColor.Value);
             }
             else
             {
@@ -99,6 +102,11 @@ namespace ValheimBetterServerConfig
             }
         }
 
+        public void PostInisilisation()
+        {
+            modList = new SyncedList(Utils.GetSaveDataPath() + "/modlist.txt", "List moderator players ID  ONE per line");
+        }
+
         public string ServerName { get => name; }
         public int ServerPort { get => serverPort.Value; }
         public string WorldName { get => worldName.Value; }
@@ -111,29 +119,29 @@ namespace ValheimBetterServerConfig
         public string Username { get => serverUsername.Value; }
         public string GameDescription { get => gameDescription.Value; }
         public bool AnnounceSave { get => announceSave.Value; }
-        public bool ShowChatYell { get => showChatYell.Value/* || showChatAll.Value*/; }
+        public bool ShowChatYell { get => showChatYell.Value || showChatAll.Value; }
+        public bool ShowChat { get => showChatAll.Value; }
+        public List<string> GetModCommands { get => modCommandsList; }
 
-        //public bool ShowChat { get => showChatAll.Value; }
-
-        public List<string> getList()
+        public List<string> GetList()
         {
-            List<string> data = new List<string>();
-
-            data.Add($"Server name: {ServerName}");
-            data.Add($"Server Port: {ServerPort}");
-            data.Add($"World Name: {WorldName}");
-            data.Add($"Server password: {Password}");
-            data.Add($"Is server visable: {Visable}");
-            data.Add($"Server size: {Size}");
-            data.Add($"Server save location: {Location}");
-            data.Add($"Steam map name: {SteamMapName}");
-            data.Add($"Number of backups: {NumberOfBackups}");
-            data.Add($"Server username: {Username}");
-            data.Add($"Show shouts in console: {ShowChatYell}");
-            data.Add($"Announce saves: {AnnounceSave}");
-            data.Add($"Game description: {GameDescription}");
-
-            return data;
+            return new List<string>
+            {
+                $"Server name: {ServerName}",
+                $"Server Port: {ServerPort}",
+                $"World Name: {WorldName}",
+                $"Server password: {Password}",
+                $"Is server visable: {Visable}",
+                $"Server size: {Size}",
+                $"Server save location: {Location}",
+                $"Steam map name: {SteamMapName}",
+                $"Number of backups: {NumberOfBackups}",
+                $"Server username: {Username}",
+                $"Show shouts in console: {ShowChatYell}",
+                $"Show all chat in console: {ShowChat}",
+                $"Announce saves: {AnnounceSave}",
+                $"Game description: {GameDescription}"
+            };
         }
     }
 }

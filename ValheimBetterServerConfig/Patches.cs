@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using static ZRoutedRpc;
 
 namespace ValheimBetterServerConfig
 {
@@ -13,9 +14,9 @@ namespace ValheimBetterServerConfig
     {
         public static ConfigTool config;
 
-        private static readonly Helper helper = new Helper();
-
         private static readonly string[] saveTypes = { ".db", ".fwl" };
+
+        private static readonly int SayHashCode = "Say".GetStableHashCode();
 
         [HarmonyPatch(typeof(FejdStartup), "ParseServerArguments")]
         [HarmonyPrefix]
@@ -34,7 +35,7 @@ namespace ValheimBetterServerConfig
 
             string serverName = config.ServerName;
             string password = config.Password;
-            if (!helper.isPasswordValid(password, createWorld, serverName))
+            if (!Helper.IsPasswordValid(password, createWorld, serverName))
             {
                 ZLog.LogError("Error bad password because its displayd in server/map name or seed");
                 Application.Quit();
@@ -59,7 +60,7 @@ namespace ValheimBetterServerConfig
         public static bool IsPublicPasswordValid_modded(string password, World world, ref bool __result)
         {
 
-            __result = helper.isPasswordValid(password, world, config.ServerName);
+            __result = Helper.IsPasswordValid(password, world, config.ServerName);
             return false;
         }
 
@@ -133,18 +134,71 @@ namespace ValheimBetterServerConfig
         public static void Start_DungeonDB()
         {
             ValheimBetterServerConfig.serverInisialised = true; // just to make sure that server is fully running before accepting console commands
+            config.PostInisilisation();
         }
 
         [HarmonyPatch(typeof(Chat), "OnNewChatMessage")]
         [HarmonyPostfix]
-        public static void OnNewChatMessage(/*GameObject go, long senderID, Vector3 pos,*/ Talker.Type type, string user, string text)
+        public static void OnNewChatMessage(/*GameObject go, long senderID, Vector3 pos, */Talker.Type type, string user, string text)
         {
-            if (!user.Equals(config.Username) && config.ShowChatYell)
+            if (config.ShowChatYell && !user.Equals(config.Username))
             {
                 if (type == Talker.Type.Shout)
                 {
-                    Console.Utils
-                           .Print($"{user} yelled {text}");
+                    Console.Utils.Print($"{user} yelled {text}");
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(ZRoutedRpc), "HandleRoutedRPC")]
+        [HarmonyPrefix]
+        public static void HandleRoutedRPC(RoutedRPCData data)
+        {
+            if (data?.m_methodHash == SayHashCode)
+            {
+                try
+                {
+                    ZNetPeer peer = ZNet.instance.GetPeer(data.m_senderPeerID);
+                    ZPackage package = new ZPackage(data.m_parameters.GetArray());
+                    int messageType = package.ReadInt();
+                    string userName = package.ReadString();
+                    string message = package.ReadString();
+                    if (!message.IsNullOrWhiteSpace())
+                    {
+                        if (messageType.Equals((int)Talker.Type.Normal))
+                        {
+                            if (config.ShowChat)
+                            {
+                                Console.Utils.Print($"{userName} said: {message}");
+                            }
+                            if (message.StartsWith("/"))
+                            {
+                                string potentialUser = ((ZRpc)AccessTools.Field(typeof(ZNetPeer), "m_rpc").GetValue(peer)).GetSocket().GetHostName();
+                                bool admin = ((SyncedList)AccessTools.Field(typeof(ZNet), "m_adminList").GetValue(ZNet.instance)).Contains(potentialUser);
+                                string temp = message.Trim(new char[] { '/', ' ' }).ToLower();
+                                if (admin)
+                                {
+                                    Runner.Instance.RunCommand(temp, false);
+                                }
+                                bool mod = config.modList.Contains(potentialUser);
+                                if(mod)
+                                {
+                                    Runner.Instance.RunCommand(temp, true);
+                                }
+                            }
+                        }
+                        else if (messageType.Equals((int)Talker.Type.Whisper))
+                        {
+                            if (config.ShowChat)
+                            {
+                                Console.Utils.Print($"{userName} whispered: {message}");
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.Utils.Print("ZRoutedRPC Patch ERROR: " + ex);
                 }
             }
         }
