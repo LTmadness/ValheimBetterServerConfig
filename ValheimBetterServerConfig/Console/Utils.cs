@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using System;
 using UnityEngine;
+using ValheimBetterServerConfig.Logger;
 
 namespace ValheimBetterServerConfig.Console
 {
@@ -14,6 +15,17 @@ namespace ValheimBetterServerConfig.Console
 
         public static void Print(string text)
         {
+            Print(text, LoggerType.Command);
+        }
+
+        public static void Print(string text, LoggerType type)
+        {
+            Print(text, type, LoggerLevel.Info);
+        }
+
+        public static void Print(string text, LoggerType type, LoggerLevel level)
+        {
+            Logger.Logger.Instance.addLog($"{text}", type, level);
             System.Console.WriteLine(text);
         }
 
@@ -33,6 +45,7 @@ namespace ValheimBetterServerConfig.Console
             {
                 string username = Runner.Instance.config.Username;
                 ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "ChatMessage", new object[] { new Vector3(), 2, username, announcement });
+                Logger.Logger.Instance.addLog($"{announcement}", LoggerType.Chat, LoggerLevel.Info);
             }
         }
 

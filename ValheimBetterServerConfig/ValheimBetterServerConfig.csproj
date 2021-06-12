@@ -39,6 +39,8 @@
     <Compile Include="Console\Utils.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="ConfigTool.cs" />
+    <Compile Include="Logger\Logger.cs" />
+    <Compile Include="Logger\LoggerEnums.cs" />
     <Compile Include="Patches.cs" />
     <Compile Include="ValheimBetterServerConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -90,5 +92,6 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

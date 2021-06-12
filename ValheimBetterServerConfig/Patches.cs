@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using ValheimBetterServerConfig.Logger;
 using static ZRoutedRpc;
 
 namespace ValheimBetterServerConfig
@@ -145,7 +146,7 @@ namespace ValheimBetterServerConfig
             {
                 if (type == Talker.Type.Shout)
                 {
-                    Console.Utils.Print($"{user} yelled {text}");
+                    Console.Utils.Print($"{user} yelled {text}", LoggerType.Chat);
                 }
             }
         }
@@ -169,7 +170,7 @@ namespace ValheimBetterServerConfig
                         {
                             if (config.ShowChat)
                             {
-                                Console.Utils.Print($"{userName} said: {message}");
+                                Console.Utils.Print($"{userName} said: {message}", LoggerType.Chat);
                             }
                             if (message.StartsWith("/"))
                             {
@@ -191,14 +192,14 @@ namespace ValheimBetterServerConfig
                         {
                             if (config.ShowChat)
                             {
-                                Console.Utils.Print($"{userName} whispered: {message}");
+                                Console.Utils.Print($"{userName} whispered: {message}", LoggerType.Chat);
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.Utils.Print("ZRoutedRPC Patch ERROR: " + ex);
+                    Console.Utils.Print("ZRoutedRPC Patch ERROR: " + ex, LoggerType.Patch, LoggerLevel.Error);
                 }
             }
         }

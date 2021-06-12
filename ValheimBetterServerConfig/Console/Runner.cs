@@ -39,9 +39,9 @@ namespace ValheimBetterServerConfig
             commands.Add(new Command("permit", "permit [ip/steamID] - add user to permitted user list", Permit, config.GetModCommands.Contains("permit")));
             commands.Add(new Command("unpermit", "unpermit [ip/steamID] - remove user from permitted user list", UnPermit, config.GetModCommands.Contains("unpermit")));
             commands.Add(new Command("addadmin", "addAdmin [name/steamID] - add user to admin list", AddAdmin, config.GetModCommands.Contains("addadmin")));
-            commands.Add(new Command("removeadmin", "removeAdmin [steamID] - remove user from admin list", RemoveAdmin, config.GetModCommands.Contains("admins")));
+            commands.Add(new Command("removeadmin", "removeAdmin [name/steamID] - remove user from admin list", RemoveAdmin, config.GetModCommands.Contains("admins")));
             commands.Add(new Command("admins", "admins - list  of admin steam ids", PrintAdmins, config.GetModCommands.Contains("admins")));
-            commands.Add(new Command("updateLists", "updateLists - force updates banned, admin and permited list with data in coresponding files", UpdateFromFile, config.GetModCommands.Contains("updateLists")));
+            commands.Add(new Command("updateLists", "updateLists - force updates banned, admin, mod and permited lists with data in coresponding files", UpdateFromFile, config.GetModCommands.Contains("updateLists")));
             commands.Add(new Command("save", "save - save server", Save, config.GetModCommands.Contains("save")));
             commands.Add(new Command("difficulty", "difficulty [nr] - force difficulty", Difficulty, config.GetModCommands.Contains("difficulty")));
             commands.Add(new Command("memory", "memory - show amount of memory used by server", Memory, config.GetModCommands.Contains("memory")));
@@ -58,6 +58,8 @@ namespace ValheimBetterServerConfig
             commands.Add(new Command("removeMod", "removemod [name/steamID] - remove user from moderator list", RemoveMod, config.GetModCommands.Contains("removemod")));
             commands.Add(new Command("mods", "mods - print moderator player list in server console", PrintMods, config.GetModCommands.Contains("mods")));
             commands.Add(new Command("modCommands", "modCommands - list of commands available to moderators", PrintModCommands, config.GetModCommands.Contains("modcommands")));
+
+            commands.Sort((x, y) => x.Key.CompareTo(y.Key));
         }
 
         public void RunCommand(string text, bool calledFromClient)

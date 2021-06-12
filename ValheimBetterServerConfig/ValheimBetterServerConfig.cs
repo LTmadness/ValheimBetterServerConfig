@@ -11,7 +11,7 @@ namespace ValheimBetterServerConfig
     {
         public const string GUID = "org.ltmadness.valheim.betterserverconfig";
         public const string NAME = "Better Server Config";
-        public const string VERSION = "0.1.2";
+        public const string VERSION = "0.1.3";
 
         public static string gameVersion = "NOT SET";
 
@@ -22,6 +22,8 @@ namespace ValheimBetterServerConfig
         public bool runConsole = true;
 
         private ConfigTool config;
+
+        private Logger.Logger logger;
 
         public async void Start()
         {
@@ -58,6 +60,7 @@ namespace ValheimBetterServerConfig
         public void Awake()
         {
             config = new ConfigTool(Config);
+            logger = new Logger.Logger(config.Location, config.LoggerLevel);
             Patches.config = config;
 
             Harmony.CreateAndPatchAll(typeof(Patches), GUID);

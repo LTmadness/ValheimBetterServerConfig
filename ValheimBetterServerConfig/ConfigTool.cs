@@ -2,6 +2,7 @@
 using BepInEx.Configuration;
 using System.Collections.Generic;
 using System.Linq;
+using ValheimBetterServerConfig.Logger;
 
 namespace ValheimBetterServerConfig
 {
@@ -10,6 +11,7 @@ namespace ValheimBetterServerConfig
         private const string DEFAULT_SETTINGS = "Default settings";
         private const string ADVANCED_SETTINGS = "Advanced settings";
         private const string CONSOLE_SETTINGS = "Console settings";
+        private const string LOGGER_SETTINGS = "Logger settings";
 
         public static ConfigFile config;
 
@@ -24,6 +26,8 @@ namespace ValheimBetterServerConfig
         private ConfigEntry<bool> visable;
 
         private ConfigEntry<int> serverPort;
+
+        private string name;
 
         //Advanced settings
         private ConfigEntry<string> serverNameColor;
@@ -42,9 +46,14 @@ namespace ValheimBetterServerConfig
         private ConfigEntry<bool> showChatYell;
         private ConfigEntry<bool> showChatAll;
 
+        private ConfigEntry<int> helpPageSize;
+
         private List<string> modCommandsList;
 
-        private string name;
+        //Logger settings
+        private ConfigEntry<LoggerLevel> loggerLevel;
+
+        
 
         public ConfigTool(ConfigFile config)
         {
@@ -79,6 +88,10 @@ namespace ValheimBetterServerConfig
             showChatYell = config.Bind<bool>(CONSOLE_SETTINGS, "Show shout chat", true, "Show what eveyone shouts (/s) in console");
             showChatAll = config.Bind<bool>(CONSOLE_SETTINGS, "Show chat", true, "Show all chat in console, overwrites show chat shout option");
             modCommandsList = config.Bind<string>(CONSOLE_SETTINGS, "Commands Allowed for Mods", "kick,say,save,sleep" , "List of commands allowed to use by mods").Value.ToLower().Split(',').ToList();
+            helpPageSize = config.Bind<int>(CONSOLE_SETTINGS, "Help Page Size", 10, "THe size opf page when using help");
+
+            //Logger settings
+            loggerLevel = config.Bind<LoggerLevel>(LOGGER_SETTINGS, "Logging level", LoggerLevel.Info, "Levels of done by the mod");
 
             config.Save();
 
@@ -122,25 +135,29 @@ namespace ValheimBetterServerConfig
         public bool ShowChatYell { get => showChatYell.Value || showChatAll.Value; }
         public bool ShowChat { get => showChatAll.Value; }
         public List<string> GetModCommands { get => modCommandsList; }
+        public int HelpPageSize { get => helpPageSize.Value; }
+        public LoggerLevel LoggerLevel { get => loggerLevel.Value; }
 
         public List<string> GetList()
         {
             return new List<string>
             {
-                $"Server name: {ServerName}",
+                $"Server Name: {ServerName}",
                 $"Server Port: {ServerPort}",
                 $"World Name: {WorldName}",
-                $"Server password: {Password}",
-                $"Is server visable: {Visable}",
-                $"Server size: {Size}",
-                $"Server save location: {Location}",
-                $"Steam map name: {SteamMapName}",
-                $"Number of backups: {NumberOfBackups}",
-                $"Server username: {Username}",
-                $"Show shouts in console: {ShowChatYell}",
-                $"Show all chat in console: {ShowChat}",
-                $"Announce saves: {AnnounceSave}",
-                $"Game description: {GameDescription}"
+                $"Server Password: {Password}",
+                $"Is Server Visable: {Visable}",
+                $"Server Size: {Size}",
+                $"Server Save Location: {Location}",
+                $"Steam Map Name: {SteamMapName}",
+                $"Number Of Backups: {NumberOfBackups}",
+                $"Server Username: {Username}",
+                $"Show Shouts In Console: {ShowChatYell}",
+                $"Show All Chat In Console: {ShowChat}",
+                $"Announce Saves: {AnnounceSave}",
+                $"Game Description: {GameDescription}",
+                $"Help Page Size: {HelpPageSize}",
+                $"Logger level: {LoggerLevel}"
             };
         }
     }

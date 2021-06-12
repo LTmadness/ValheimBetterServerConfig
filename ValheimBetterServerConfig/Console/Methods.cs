@@ -5,6 +5,7 @@ using UnityEngine;
 using static ValheimBetterServerConfig.Console.Utils;
 using static Utils;
 using static ValheimBetterServerConfig.ValheimBetterServerConfig;
+using ValheimBetterServerConfig.Logger;
 
 namespace ValheimBetterServerConfig.Console
 {
@@ -13,10 +14,22 @@ namespace ValheimBetterServerConfig.Console
         public static bool Help(string[] args)
         {
             ArgumentSkipped(args);
-            Print("Available commands:");
-            foreach (Command command in Runner.Instance.commands)
+            Runner runner = Runner.Instance;
+            int page = int.Parse(args[1]);
+            int totalPages = (int) Math.Ceiling((double) (runner.commands.Count / runner.config.HelpPageSize));
+            if (totalPages <= page)
             {
-                Print(command.Hint);
+                List<Command> pageCommands = runner.commands.GetRange((page * runner.config.HelpPageSize) - 1, runner.config.HelpPageSize);
+                Print($"Available commands page {page}");
+                foreach (Command command in pageCommands)
+                {
+                    Print(command.Hint);
+                }
+
+            } else
+            {
+                Print($"Please select page from range: 1 - {totalPages}");
+                return false;
             }
             return true;
         }
@@ -274,7 +287,7 @@ namespace ValheimBetterServerConfig.Console
                 string message = RebuildString(args);
                 string username = Runner.Instance.config.Username;
                 ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "ChatMessage", new object[] { new Vector3(), 1, username, message });
-                Print($"{username} said {message}");
+                Print($"{username} said {message}", LoggerType.Chat);
                 return true;
             }
             return false;
@@ -287,7 +300,7 @@ namespace ValheimBetterServerConfig.Console
                 string message = RebuildString(args);
                 string username = Runner.Instance.config.Username;
                 ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "ChatMessage", new object[] { new Vector3(), 2, username, message });
-                Print($"{username} yelled {message}");
+                Print($"{username} yelled {message}", LoggerType.Chat);
                 return true;
             }
             return false;
