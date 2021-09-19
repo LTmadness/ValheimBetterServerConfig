@@ -39,12 +39,12 @@ namespace ValheimBetterServerConfig
                 while (runConsole)
                 {
                     string input = "";
-                   // try
-                    //{
+                    try
+                    {
                         input = System.Console.ReadLine();
                         console.RunCommand(input, false);
                         input = "";
-                    /*}
+                    }
                     catch
                     {
                         if (!input.Trim().IsNullOrWhiteSpace())
@@ -53,7 +53,7 @@ namespace ValheimBetterServerConfig
                                 $" please report it on https://github.com/LTmadness/ValheimBetterServerConfig, please include input command used");
                         }
                         
-                    }*/
+                    }
                 }
             });
         }
