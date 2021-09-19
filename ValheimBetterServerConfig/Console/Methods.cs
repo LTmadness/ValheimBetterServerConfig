@@ -13,13 +13,28 @@ namespace ValheimBetterServerConfig.Console
     {
         public static bool Help(string[] args)
         {
-            ArgumentSkipped(args);
             Runner runner = Runner.Instance;
-            int page = int.Parse(args[1]);
+            int page = 1;
+            if (args.Length > 1) { 
+                page = int.Parse(args[1]);
+                if (args.Length > 2)
+                {
+                    string[] skipped = args;
+                    skipped[0] = "";
+                    skipped[1] = "";
+                    ArgumentSkipped(skipped);
+                }
+            }
             int totalPages = (int) Math.Ceiling((double) (runner.commands.Count / runner.config.HelpPageSize));
-            if (totalPages <= page)
+            if (page > 0 && page <= totalPages)
             {
-                List<Command> pageCommands = runner.commands.GetRange((page * runner.config.HelpPageSize) - 1, runner.config.HelpPageSize);
+                int pageStart = (page * runner.config.HelpPageSize) - 1;
+                int pageEnd = runner.config.HelpPageSize;
+                if (pageStart + runner.config.HelpPageSize > runner.commands.Count)
+                {
+                    pageEnd = runner.commands.Count - pageStart;
+                }
+                List<Command> pageCommands = runner.commands.GetRange(pageStart, pageEnd);
                 Print($"Available commands page {page}");
                 foreach (Command command in pageCommands)
                 {

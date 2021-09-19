@@ -11,7 +11,7 @@ namespace ValheimBetterServerConfig
     {
         public const string GUID = "org.ltmadness.valheim.betterserverconfig";
         public const string NAME = "Better Server Config";
-        public const string VERSION = "0.1.3";
+        public const string VERSION = "0.1.5";
 
         public static string gameVersion = "NOT SET";
 
@@ -29,7 +29,7 @@ namespace ValheimBetterServerConfig
         {
             await Task.Run(() =>
             {
-                while ((ZNet.instance == null) || !serverInisialised)
+                while (ZNet.instance == null || !serverInisialised)
                 {
                     Thread.Sleep(1000);// waiting for zNets  to inisialise
                 }
@@ -39,12 +39,12 @@ namespace ValheimBetterServerConfig
                 while (runConsole)
                 {
                     string input = "";
-                    try
-                    {
+                   // try
+                    //{
                         input = System.Console.ReadLine();
                         console.RunCommand(input, false);
                         input = "";
-                    }
+                    /*}
                     catch
                     {
                         if (!input.Trim().IsNullOrWhiteSpace())
@@ -52,7 +52,8 @@ namespace ValheimBetterServerConfig
                             Console.Utils.Print($"Please don't use {input} as its causing error," +
                                 $" please report it on https://github.com/LTmadness/ValheimBetterServerConfig, please include input command used");
                         }
-                    }
+                        
+                    }*/
                 }
             });
         }

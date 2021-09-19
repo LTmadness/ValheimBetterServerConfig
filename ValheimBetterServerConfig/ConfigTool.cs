@@ -91,7 +91,7 @@ namespace ValheimBetterServerConfig
             helpPageSize = config.Bind<int>(CONSOLE_SETTINGS, "Help Page Size", 10, "THe size opf page when using help");
 
             //Logger settings
-            loggerLevel = config.Bind<LoggerLevel>(LOGGER_SETTINGS, "Logging level", LoggerLevel.Info, "Levels of done by the mod");
+            loggerLevel = config.Bind<LoggerLevel>(LOGGER_SETTINGS, "Logging level", LoggerLevel.Info, "Lowest level of logs to be recored to file (Info, Debug, Error)");
 
             config.Save();
 

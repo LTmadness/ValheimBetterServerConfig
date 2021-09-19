@@ -11,8 +11,8 @@ namespace ValheimBetterServerConfig.Logger
 
     public enum LoggerLevel
     {
-        Error,
         Info,
-        Debug
+        Debug,
+        Error
     }
 }

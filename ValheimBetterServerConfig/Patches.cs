@@ -82,7 +82,7 @@ namespace ValheimBetterServerConfig
             AccessTools.Field(typeof(ZSteamMatchmaking), "m_registerServerName").SetValue(__instance, config.ServerName);
             AccessTools.Field(typeof(ZSteamMatchmaking), "m_registerPassword").SetValue(__instance, password);
             AccessTools.Field(typeof(ZSteamMatchmaking), "m_registerVerson").SetValue(__instance, version);
-            Console.Utils.Print("Registering lobby (modded)");
+            Console.Utils.Print("Registering lobby (modded)", LoggerType.Patch);
             return false;
         }
 
@@ -118,7 +118,7 @@ namespace ValheimBetterServerConfig
                 }
                 catch
                 {
-                    Console.Utils.Print("Nothing to back up yet");
+                    Console.Utils.Print("Nothing to back up yet", LoggerType.Patch, LoggerLevel.Error);
                     return;
                 }
 

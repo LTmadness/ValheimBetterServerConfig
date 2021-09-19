@@ -28,23 +28,26 @@ namespace ValheimBetterServerConfig.Logger
             instance = this;
             loggerLocation = saveLocation + "/logs/";
             levelSetting = loggerSetting;
+            Directory.CreateDirectory(loggerLocation);
         }
 
         public void addLog(string message, LoggerType type, LoggerLevel level)
         {
-            if (levelSetting >= level) 
+            if (levelSetting <= level) 
             {
                 DateTime now = DateTime.Now;
                 string dayNow = now.ToShortDateString().Replace("/", "-").Replace(" ", "");
                 string fileName = $"{type}{dayNow}.logs";
-                addLog($"[{level}][{now.ToShortTimeString()}]{message}", loggerLocation + fileName).RunSynchronously();
-            }
-        }
 
-        private async Task addLog(string message, string fileLocation)
-        {
-            StreamWriter file = new StreamWriter(fileLocation, append: true);
-            await file.WriteLineAsync(message);
+                using (FileStream fileStream = new FileStream(loggerLocation + fileName, FileMode.Append))
+                {
+                    using (StreamWriter file = new StreamWriter(fileStream))
+                    {
+                        file.WriteLine($"[{level}][{now.ToShortTimeString()}]{message}");
+                    }
+                }
+                
+            }
         }
     }
 }
