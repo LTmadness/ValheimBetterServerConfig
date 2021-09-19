@@ -49,6 +49,8 @@ namespace ValheimBetterServerConfig
             commands.Add(new Command("sleep", "sleep - force night skip", Sleep, config.GetModCommands.Contains("sleep")));
             commands.Add(new Command("say", "say [message] - to say something as server", Say, config.GetModCommands.Contains("say")));
             commands.Add(new Command("yell", "yell [message] - to shout something as server", Yell, config.GetModCommands.Contains("yell")));
+            commands.Add(new Command("message", "message [text] - to send message to everyone screens (top left)", Message, config.GetModCommands.Contains("message")));
+            commands.Add(new Command("announce", "announce [text] - to send message to everyone screens (center)", Announce, config.GetModCommands.Contains("announce")));
             commands.Add(new Command("config", "config - shows all what is set on your settings", Config, config.GetModCommands.Contains("config")));
             commands.Add(new Command("online", "online - display list of players online with their steamIDs", Online, config.GetModCommands.Contains("online")));
             commands.Add(new Command("ip", "ip - show server ip", IpAddress, config.GetModCommands.Contains("ip")));

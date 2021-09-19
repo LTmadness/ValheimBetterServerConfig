@@ -39,13 +39,14 @@ namespace ValheimBetterServerConfig.Console
             return true;
         }
 
-        public static void Announce(string announcement)
+        public static void Announce(string announcement, MessageHud.MessageType type)
         {
             if (!announcement.IsNullOrWhiteSpace())
             {
                 string username = Runner.Instance.config.Username;
                 ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "ChatMessage", new object[] { new Vector3(), 2, username, announcement });
-                Logger.Logger.Instance.addLog($"{announcement}", LoggerType.Chat, LoggerLevel.Info);
+                MessageHud.instance.MessageAll(type, announcement);
+                Logger.Logger.Instance.addLog($"{type} annoucment: {announcement}", LoggerType.Chat, LoggerLevel.Info);
             }
         }
 

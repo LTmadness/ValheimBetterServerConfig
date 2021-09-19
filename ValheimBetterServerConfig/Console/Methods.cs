@@ -321,6 +321,32 @@ namespace ValheimBetterServerConfig.Console
             return false;
         }
 
+        public static bool Message(string[] args)
+        {
+            if (args.Length > 1)
+            {
+                string message = RebuildString(args);
+                string username = Runner.Instance.config.Username;
+                MessageHud.instance.MessageAll(MessageHud.MessageType.TopLeft, message);
+                Print($"{username} messaged all {message}", LoggerType.Chat);
+                return true;
+            }
+            return false;
+        }
+
+        public static bool Announce(string[] args)
+        {
+            if (args.Length > 1)
+            {
+                string message = RebuildString(args);
+                string username = Runner.Instance.config.Username;
+                MessageHud.instance.MessageAll(MessageHud.MessageType.Center, message);
+                Print($"{username} announced {message}", LoggerType.Chat);
+                return true;
+            }
+            return false;
+        }
+
         public static bool Config(string[] args)
         {
             ArgumentSkipped(args);
