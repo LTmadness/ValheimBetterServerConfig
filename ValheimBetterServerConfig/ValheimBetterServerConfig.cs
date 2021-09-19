@@ -31,7 +31,7 @@ namespace ValheimBetterServerConfig
             {
                 while (ZNet.instance == null || !serverInisialised)
                 {
-                    Thread.Sleep(1000);// waiting for zNets  to inisialise
+                    Thread.Sleep(1000);// waiting for zNets and DungionDB to inisialise
                 }
 
                 console = new Runner(config);

@@ -34,6 +34,15 @@ Default value: false
 Enabled = false
 
 ### Changes
+##### v0.1.5
+- New logging system:
+	* writes chat
+	* commands
+	* patch logs
+	* player info
+	* all of this information is written into separate files(player info not supported yet)
+	* early implementation so might not log everything
+	
 ##### v0.1.2
 - New ability to run commands by typing it in a chat and adding '/' before it e.g. /sleep
 - New permission tear - moderator
@@ -78,12 +87,3 @@ Enabled = false
 - Fix for Shutdown command
 - Fix for visible setting
 
-##### v0.0.60
-- New console commands:
-	* say - to say something to players in server as server
-	* yell - to shout something at players in server as server
-	* config - displays all of the information you have set in config as a list
-- New config option:
-	* Server Username - the name thats displayed for a server when say/yell command used
-- Fix for shutdown command
-- Small fixes and optimisations
