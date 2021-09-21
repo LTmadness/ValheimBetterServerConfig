@@ -11,7 +11,7 @@ namespace ValheimBetterServerConfig
     {
         public const string GUID = "org.ltmadness.valheim.betterserverconfig";
         public const string NAME = "Better Server Config";
-        public const string VERSION = "0.1.2";
+        public const string VERSION = "0.1.5";
 
         public static string gameVersion = "NOT SET";
 
@@ -23,13 +23,15 @@ namespace ValheimBetterServerConfig
 
         private ConfigTool config;
 
+        private Logger.Logger logger;
+
         public async void Start()
         {
             await Task.Run(() =>
             {
-                while ((ZNet.instance == null) || !serverInisialised)
+                while (ZNet.instance == null || !serverInisialised)
                 {
-                    Thread.Sleep(1000);// waiting for zNets  to inisialise
+                    Thread.Sleep(1000);// waiting for zNets and DungionDB to inisialise
                 }
 
                 console = new Runner(config);
@@ -58,6 +60,7 @@ namespace ValheimBetterServerConfig
         public void Awake()
         {
             config = new ConfigTool(Config);
+            logger = new Logger.Logger(config.Location, config.LoggerLevel);
             Patches.config = config;
 
             Harmony.CreateAndPatchAll(typeof(Patches), GUID);

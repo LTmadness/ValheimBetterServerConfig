@@ -6,7 +6,7 @@ Lets you remove password from a dedicated server
 Easy config file with all of the options at your fingertips
 Extra configurable settings added to what is already accessible to you in valheim
 Bash console commands that you can run without going into the game, 
-full list of commands can be found using command - help
+Full list of commands can be found using command - help
 Automated backup system with configurable amount of saves
 
 ### Support
@@ -34,6 +34,20 @@ Default value: false
 Enabled = false
 
 ### Changes
+##### v0.1.5
+- New logging system:
+	* writes chat
+	* commands
+	* patch logs
+	* player info
+	* all of this information is written into separate files
+	* early implementation so might not log everything
+- New commands:
+	* message - sends a message (top left of the screen) to everyone on server
+	* announce - sends an announcement (middle of the screen) to everyone on the server
+- Fixed ability to use commands from in game chat (was broken by some Valheim update)
+	* admins and mods will require this mod to be able to send commands from chat
+	
 ##### v0.1.2
 - New ability to run commands by typing it in a chat and adding '/' before it e.g. /sleep
 - New permission tear - moderator
@@ -73,17 +87,3 @@ Enabled = false
 	* Show shout chat - when enables console displays shouts (/s messages) in console
 - Small fixes and optimisations
 
-##### v0.0.70
-- New command system
-- Fix for Shutdown command
-- Fix for visible setting
-
-##### v0.0.60
-- New console commands:
-	* say - to say something to players in server as server
-	* yell - to shout something at players in server as server
-	* config - displays all of the information you have set in config as a list
-- New config option:
-	* Server Username - the name thats displayed for a server when say/yell command used
-- Fix for shutdown command
-- Small fixes and optimisations

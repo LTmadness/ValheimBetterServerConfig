@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using ValheimBetterServerConfig.Logger;
 using static ZRoutedRpc;
 
 namespace ValheimBetterServerConfig
@@ -37,10 +38,11 @@ namespace ValheimBetterServerConfig
             string password = config.Password;
             if (!Helper.IsPasswordValid(password, createWorld, serverName))
             {
-                ZLog.LogError("Error bad password because its displayd in server/map name or seed");
+                Console.Utils.Print("Error bad password because its displayd in server/map name or seed", LoggerType.Patch, LoggerLevel.Error);
                 Application.Quit();
 
                 __result = false;
+
                 return false;
             }
 
@@ -52,6 +54,7 @@ namespace ValheimBetterServerConfig
             SteamManager.SetServerPort(config.ServerPort);
 
             __result = true;
+
             return false;
         }
 
@@ -61,6 +64,7 @@ namespace ValheimBetterServerConfig
         {
 
             __result = Helper.IsPasswordValid(password, world, config.ServerName);
+
             return false;
         }
 
@@ -81,7 +85,8 @@ namespace ValheimBetterServerConfig
             AccessTools.Field(typeof(ZSteamMatchmaking), "m_registerServerName").SetValue(__instance, config.ServerName);
             AccessTools.Field(typeof(ZSteamMatchmaking), "m_registerPassword").SetValue(__instance, password);
             AccessTools.Field(typeof(ZSteamMatchmaking), "m_registerVerson").SetValue(__instance, version);
-            Console.Utils.Print("Registering lobby (modded)");
+            Console.Utils.Print("Registering lobby (modded)", LoggerType.Patch);
+
             return false;
         }
 
@@ -91,7 +96,7 @@ namespace ValheimBetterServerConfig
         {
             if (config.AnnounceSave)
             {
-                Console.Utils.Announce($"Server is being saved: {DateTime.Now}");
+                Console.Utils.Announce($"Server is being saved: {DateTime.Now}", MessageHud.MessageType.TopLeft);
             }
 
             int numberOfBackups = config.NumberOfBackups * saveTypes.Count();
@@ -117,7 +122,8 @@ namespace ValheimBetterServerConfig
                 }
                 catch
                 {
-                    Console.Utils.Print("Nothing to back up yet");
+                    Console.Utils.Print("Nothing to back up yet", LoggerType.Patch, LoggerLevel.Error);
+
                     return;
                 }
 
@@ -145,7 +151,7 @@ namespace ValheimBetterServerConfig
             {
                 if (type == Talker.Type.Shout)
                 {
-                    Console.Utils.Print($"{user} yelled {text}");
+                    Console.Utils.Print($"{user} yelled {text}", LoggerType.Chat);
                 }
             }
         }
@@ -169,7 +175,7 @@ namespace ValheimBetterServerConfig
                         {
                             if (config.ShowChat)
                             {
-                                Console.Utils.Print($"{userName} said: {message}");
+                                Console.Utils.Print($"{userName} said: {message}", LoggerType.Chat);
                             }
                             if (message.StartsWith("/"))
                             {
@@ -178,11 +184,13 @@ namespace ValheimBetterServerConfig
                                 string temp = message.Trim(new char[] { '/', ' ' }).ToLower();
                                 if (admin)
                                 {
+                                    Logger.Logger.Instance.addLog($"{userName} said: {message}", LoggerType.Command, LoggerLevel.Info);
                                     Runner.Instance.RunCommand(temp, false);
                                 }
                                 bool mod = config.modList.Contains(potentialUser);
                                 if(mod)
                                 {
+                                    Logger.Logger.Instance.addLog($"{userName} said: {message}", LoggerType.Command, LoggerLevel.Info);
                                     Runner.Instance.RunCommand(temp, true);
                                 }
                             }
@@ -191,16 +199,82 @@ namespace ValheimBetterServerConfig
                         {
                             if (config.ShowChat)
                             {
-                                Console.Utils.Print($"{userName} whispered: {message}");
+                                Console.Utils.Print($"{userName} whispered: {message}", LoggerType.Chat);
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.Utils.Print("ZRoutedRPC Patch ERROR: " + ex);
+                    Console.Utils.Print("ZRoutedRPC Patch ERROR: " + ex, LoggerType.Patch, LoggerLevel.Error);
                 }
             }
         }
+
+        [HarmonyPatch(typeof(ZSteamSocket), "OnStatusChanged")]
+        [HarmonyPrefix]
+        public static bool OnStatusChanged(SteamNetConnectionStatusChangedCallback_t data, ZSteamSocket __instance)
+        {
+
+            Console.Utils.Print(("Got status changed msg " + data.m_info.m_eState), LoggerType.Patch, LoggerLevel.Info);
+            if (data.m_info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected && data.m_eOldState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connecting)
+            {
+                Console.Utils.Print("Connected " + data.m_hConn.m_HSteamNetConnection, LoggerType.Player, LoggerLevel.Debug);
+                ZSteamSocket socket = (ZSteamSocket) AccessTools.Method(typeof(ZSteamSocket), "FindSocket").Invoke(__instance, new object[] { data.m_hConn });
+
+                if (socket != null)
+                {
+                    if (SteamGameServerNetworkingSockets.GetConnectionInfo(data.m_hConn, out SteamNetConnectionInfo_t pInfo))
+                    {
+                        AccessTools.Field(typeof(ZSteamSocket), "m_peerID").SetValue(socket, pInfo.m_identityRemote);
+                    }
+
+                    SteamNetworkingIdentity peerID = (SteamNetworkingIdentity) AccessTools.Field(typeof(ZSteamSocket), "m_peerID").GetValue(socket);
+
+                Console.Utils.Print("Got connection SteamID " + peerID.GetSteamID().ToString(), LoggerType.Player, LoggerLevel.Debug);
+                }
+            }
+
+            if (data.m_info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connecting && data.m_eOldState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_None)
+            {
+                Console.Utils.Print("New connection " + data.m_hConn.m_HSteamNetConnection, LoggerType.Player, LoggerLevel.Debug);
+                ZSteamSocket socket = (ZSteamSocket)(AccessTools.Method(typeof(ZSteamSocket), "GetListner").Invoke(__instance, new object[0] ));
+                if (socket != null)
+                {
+                    AccessTools.Method(typeof(ZSteamSocket), "OnNewConnection").Invoke(socket, new object[] { data.m_hConn });
+                }
+            }
+
+            if (data.m_info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally)
+            {
+                Console.Utils.Print("Got problem " + data.m_info.m_eEndReason + ":" + data.m_info.m_szEndDebug, LoggerType.Patch, LoggerLevel.Debug);
+                ZSteamSocket socket = (ZSteamSocket)AccessTools.Method(typeof(ZSteamSocket), "FindSocket").Invoke(__instance, new object[] { data.m_hConn });
+                if (socket != null)
+                {
+                    Console.Utils.Print("Closing socket " + socket.GetHostName(), LoggerType.Player, LoggerLevel.Debug);
+                    socket.Close();
+                }
+            }
+
+            if (data.m_info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ClosedByPeer)
+            {
+                return false;
+            }
+
+            Console.Utils.Print("Socket closed by peer " + data.m_hConn.m_HSteamNetConnection, LoggerType.Player, LoggerLevel.Debug);
+            ZSteamSocket socket1 = (ZSteamSocket)AccessTools.Method(typeof(ZSteamSocket), "FindSocket").Invoke(__instance, new object[] { data.m_hConn });
+
+            if (socket1 == null)
+            {
+                return false;
+            }
+              
+
+            Console.Utils.Print("Closing socket " + socket1.GetHostName(), LoggerType.Player, LoggerLevel.Debug);
+            socket1.Close();
+
+            return false;
+        }
+
     }
 }

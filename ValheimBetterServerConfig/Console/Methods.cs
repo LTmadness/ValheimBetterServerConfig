@@ -5,6 +5,8 @@ using UnityEngine;
 using static ValheimBetterServerConfig.Console.Utils;
 using static Utils;
 using static ValheimBetterServerConfig.ValheimBetterServerConfig;
+using ValheimBetterServerConfig.Logger;
+using System.Diagnostics;
 
 namespace ValheimBetterServerConfig.Console
 {
@@ -12,12 +14,41 @@ namespace ValheimBetterServerConfig.Console
     {
         public static bool Help(string[] args)
         {
-            ArgumentSkipped(args);
-            Print("Available commands:");
-            foreach (Command command in Runner.Instance.commands)
-            {
-                Print(command.Hint);
+            Runner runner = Runner.Instance;
+            int page = 1;
+            if (args.Length > 1) { 
+                page = int.Parse(args[1]);
+                if (args.Length > 2)
+                {
+                    string[] skipped = args;
+                    skipped[0] = "";
+                    skipped[1] = "";
+                    ArgumentSkipped(skipped);
+                }
             }
+            int totalPages = (int) Math.Ceiling((double) (runner.commands.Count / runner.config.HelpPageSize));
+            if (page > 0 && page <= totalPages)
+            {
+                int pageStart = (page * runner.config.HelpPageSize) - 1;
+                int pageEnd = runner.config.HelpPageSize;
+                if (pageStart + runner.config.HelpPageSize > runner.commands.Count)
+                {
+                    pageEnd = runner.commands.Count - pageStart;
+                }
+                List<Command> pageCommands = runner.commands.GetRange(pageStart, pageEnd);
+                Print($"Available commands page {page}");
+                foreach (Command command in pageCommands)
+                {
+                    Print(command.Hint);
+                }
+
+            } else
+            {
+                Print($"Please select page from range: 1 - {totalPages}");
+
+                return false;
+            }
+
             return true;
         }
 
@@ -42,14 +73,17 @@ namespace ValheimBetterServerConfig.Console
                     peers.Remove(znetPeer);
                     AccessTools.Field(typeof(ZNet), "m_peers").SetValue(zNet, peers);
                     znetPeer.Dispose();
+
                     return true;
                 }
                 else
                 {
                     Console.Utils.Print($"User \"{user}\" not found");
+
                     return false;
                 }
             }
+
             return false;
         }
 
@@ -68,8 +102,10 @@ namespace ValheimBetterServerConfig.Console
                 SyncedList bannedPlayers = (SyncedList)AccessTools.Field(typeof(ZNet), "m_bannedList").GetValue(zNet);
                 bannedPlayers.Add(user);
                 AccessTools.Field(typeof(ZNet), "m_bannedList").SetValue(zNet, bannedPlayers);
+
                 return true;
             }
+
             return false;
         }
 
@@ -83,8 +119,10 @@ namespace ValheimBetterServerConfig.Console
                 SyncedList bannedPlayers = (SyncedList)AccessTools.Field(typeof(ZNet), "m_bannedList").GetValue(zNet);
                 bannedPlayers.Remove(user);
                 AccessTools.Field(typeof(ZNet), "m_bannedList").SetValue(zNet, bannedPlayers);
+
                 return true;
             }
+
             return false;
         }
 
@@ -103,8 +141,10 @@ namespace ValheimBetterServerConfig.Console
                 SyncedList permittedPlayers = (SyncedList)AccessTools.Field(typeof(ZNet), "m_permittedList").GetValue(zNet);
                 permittedPlayers.Add(user);
                 AccessTools.Field(typeof(ZNet), "m_permittedList").SetValue(zNet, permittedPlayers);
+
                 return true;
             }
+
             return false;
         }
 
@@ -118,8 +158,10 @@ namespace ValheimBetterServerConfig.Console
                 SyncedList permittedPlayers = (SyncedList)AccessTools.Field(typeof(ZNet), "m_permittedList").GetValue(zNet);
                 permittedPlayers.Remove(user);
                 AccessTools.Field(typeof(ZNet), "m_permittedList").SetValue(zNet, permittedPlayers);
+
                 return true;
             }
+
             return false;
         }
 
@@ -138,8 +180,10 @@ namespace ValheimBetterServerConfig.Console
                 SyncedList adminList = (SyncedList)AccessTools.Field(typeof(ZNet), "m_adminList").GetValue(zNet);
                 adminList.Add(user);
                 AccessTools.Field(typeof(ZNet), "m_adminList").SetValue(zNet, adminList);
+
                 return true;
             }
+
             return false;
         }
 
@@ -158,8 +202,10 @@ namespace ValheimBetterServerConfig.Console
                 SyncedList adminList = (SyncedList)AccessTools.Field(typeof(ZNet), "m_adminList").GetValue(zNet);
                 adminList.Remove(user);
                 AccessTools.Field(typeof(ZNet), "m_adminList").SetValue(zNet, adminList);
+
                 return true;
             }
+
             return false;
         }
 
@@ -173,6 +219,7 @@ namespace ValheimBetterServerConfig.Console
             {
                 Print(id);
             }
+
             return true;
         }
 
@@ -186,6 +233,7 @@ namespace ValheimBetterServerConfig.Console
             {
                 Print(id);
             }
+
             return true;
         }
 
@@ -199,6 +247,7 @@ namespace ValheimBetterServerConfig.Console
             {
                 Print(id);
             }
+
             return true;
         }
 
@@ -214,6 +263,7 @@ namespace ValheimBetterServerConfig.Console
                        .SetValue(zNet, new SyncedList(GetSaveDataPath() + "/permittedlist.txt", "List permitted players ID ONE per line"));
             Patches.config.modList = new SyncedList(GetSaveDataPath() + "/permittedlist.txt", "List permitted players ID ONE per line");
             Print("Lists refreshed");
+
             return true;
         }
 
@@ -221,6 +271,7 @@ namespace ValheimBetterServerConfig.Console
         {
             ArgumentSkipped(args);
             ZNet.instance.Save(false);
+
             return true;
         }
 
@@ -233,6 +284,7 @@ namespace ValheimBetterServerConfig.Console
                 {
                     Game.instance.SetForcePlayerDifficulty(num);
                     Print($"Setting players to {num}");
+
                     return true;
                 }
             }
@@ -240,6 +292,7 @@ namespace ValheimBetterServerConfig.Console
             {
                 return false;
             }
+
             return false;
         }
 
@@ -247,7 +300,8 @@ namespace ValheimBetterServerConfig.Console
         {
             ArgumentSkipped(args);
             long totalMemory = GC.GetTotalMemory(false);
-            Print($"Total allocated memory: {totalMemory / 1048576L:0} mb");
+            Print($"Total allocated memory: {totalMemory / 1048576L} mb");
+
             return true;
         }
 
@@ -257,6 +311,7 @@ namespace ValheimBetterServerConfig.Console
             ZNet.instance.Save(true);
             Application.Quit();
             System.Console.Out.Close();
+
             return true;
         }
 
@@ -264,6 +319,7 @@ namespace ValheimBetterServerConfig.Console
         {
             ArgumentSkipped(args);
             EnvMan.instance.SkipToMorning();
+
             return true;
         }
 
@@ -274,9 +330,11 @@ namespace ValheimBetterServerConfig.Console
                 string message = RebuildString(args);
                 string username = Runner.Instance.config.Username;
                 ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "ChatMessage", new object[] { new Vector3(), 1, username, message });
-                Print($"{username} said {message}");
+                Print($"{username} said {message}", LoggerType.Chat);
+
                 return true;
             }
+
             return false;
         }
 
@@ -287,9 +345,40 @@ namespace ValheimBetterServerConfig.Console
                 string message = RebuildString(args);
                 string username = Runner.Instance.config.Username;
                 ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "ChatMessage", new object[] { new Vector3(), 2, username, message });
-                Print($"{username} yelled {message}");
+                Print($"{username} yelled {message}", LoggerType.Chat);
+
                 return true;
             }
+
+            return false;
+        }
+
+        public static bool Message(string[] args)
+        {
+            if (args.Length > 1)
+            {
+                string message = RebuildString(args);
+                string username = Runner.Instance.config.Username;
+                MessageHud.instance.MessageAll(MessageHud.MessageType.TopLeft, message);
+                Print($"{username} messaged all {message}", LoggerType.Chat);
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool Announce(string[] args)
+        {
+            if (args.Length > 1)
+            {
+                string message = RebuildString(args);
+                string username = Runner.Instance.config.Username;
+                MessageHud.instance.MessageAll(MessageHud.MessageType.Center, message);
+                Print($"{username} announced {message}", LoggerType.Chat);
+
+                return true;
+            }
+
             return false;
         }
 
@@ -301,6 +390,7 @@ namespace ValheimBetterServerConfig.Console
             {
                 Print(conf);
             }
+
             return true;
         }
 
@@ -322,6 +412,7 @@ namespace ValheimBetterServerConfig.Console
             {
                 Print("No players currently online");
             }
+
             return true;
         }
 
@@ -329,6 +420,7 @@ namespace ValheimBetterServerConfig.Console
         {
             ArgumentSkipped(args);
             Print($"Sever IP: {AccessTools.Method(typeof(ZNet), "GetPublicIP").Invoke(ZNet.instance, new object[] { })}");
+
             return true;
         }
 
@@ -336,6 +428,7 @@ namespace ValheimBetterServerConfig.Console
         {
             ArgumentSkipped(args);
             Print($"Server tps: {(1 / Time.deltaTime):F2}");
+
             return true;
         }
 
@@ -344,6 +437,7 @@ namespace ValheimBetterServerConfig.Console
             ArgumentSkipped(args);
             Print($"Valheim version: {gameVersion}");
             Print($"Better Server Config version: {VERSION}");
+
             return true;
         }
 
@@ -359,8 +453,10 @@ namespace ValheimBetterServerConfig.Console
                 }
                 Print($"Adding player to the mod list: {user}");
                 Runner.Instance.config.modList.Add(user);
+
                 return true;
             }
+
             return false;
         }
 
@@ -376,8 +472,10 @@ namespace ValheimBetterServerConfig.Console
                 }
                 Print($"Remove player to the mod list: {user}");
                 Runner.Instance.config.modList.Remove(user);
+
                 return true;
             }
+
             return false;
         }
 
@@ -390,6 +488,7 @@ namespace ValheimBetterServerConfig.Console
             {
                 Print(id);
             }
+
             return true;
         }
 
@@ -405,6 +504,7 @@ namespace ValheimBetterServerConfig.Console
                     Print(command.Hint);
                 }
             }
+
             return true;
         }
     }

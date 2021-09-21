@@ -39,9 +39,12 @@
     <Compile Include="Console\Utils.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="ConfigTool.cs" />
+    <Compile Include="Logger\Logger.cs" />
+    <Compile Include="Logger\LoggerEnums.cs" />
     <Compile Include="Patches.cs" />
     <Compile Include="ValheimBetterServerConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ValheimBetterServerConfigClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -64,7 +67,6 @@
     </Reference>
     <Reference Include="assembly_valheim">
       <HintPath>..\..\Libraries\assembly_valheim.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="BepInEx">
       <HintPath>..\..\Libraries\BepInEx.dll</HintPath>
@@ -89,6 +91,11 @@
       <HintPath>..\..\Libraries\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libraries\UnityEngine.UI.dll</HintPath>
+    </Reference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

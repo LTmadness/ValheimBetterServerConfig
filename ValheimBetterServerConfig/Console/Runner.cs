@@ -39,9 +39,9 @@ namespace ValheimBetterServerConfig
             commands.Add(new Command("permit", "permit [ip/steamID] - add user to permitted user list", Permit, config.GetModCommands.Contains("permit")));
             commands.Add(new Command("unpermit", "unpermit [ip/steamID] - remove user from permitted user list", UnPermit, config.GetModCommands.Contains("unpermit")));
             commands.Add(new Command("addadmin", "addAdmin [name/steamID] - add user to admin list", AddAdmin, config.GetModCommands.Contains("addadmin")));
-            commands.Add(new Command("removeadmin", "removeAdmin [steamID] - remove user from admin list", RemoveAdmin, config.GetModCommands.Contains("admins")));
+            commands.Add(new Command("removeadmin", "removeAdmin [name/steamID] - remove user from admin list", RemoveAdmin, config.GetModCommands.Contains("admins")));
             commands.Add(new Command("admins", "admins - list  of admin steam ids", PrintAdmins, config.GetModCommands.Contains("admins")));
-            commands.Add(new Command("updateLists", "updateLists - force updates banned, admin and permited list with data in coresponding files", UpdateFromFile, config.GetModCommands.Contains("updateLists")));
+            commands.Add(new Command("updateLists", "updateLists - force updates banned, admin, mod and permited lists with data in coresponding files", UpdateFromFile, config.GetModCommands.Contains("updateLists")));
             commands.Add(new Command("save", "save - save server", Save, config.GetModCommands.Contains("save")));
             commands.Add(new Command("difficulty", "difficulty [nr] - force difficulty", Difficulty, config.GetModCommands.Contains("difficulty")));
             commands.Add(new Command("memory", "memory - show amount of memory used by server", Memory, config.GetModCommands.Contains("memory")));
@@ -49,6 +49,8 @@ namespace ValheimBetterServerConfig
             commands.Add(new Command("sleep", "sleep - force night skip", Sleep, config.GetModCommands.Contains("sleep")));
             commands.Add(new Command("say", "say [message] - to say something as server", Say, config.GetModCommands.Contains("say")));
             commands.Add(new Command("yell", "yell [message] - to shout something as server", Yell, config.GetModCommands.Contains("yell")));
+            commands.Add(new Command("message", "message [text] - to send message to everyone screens (top left)", Message, config.GetModCommands.Contains("message")));
+            commands.Add(new Command("announce", "announce [text] - to send message to everyone screens (center)", Announce, config.GetModCommands.Contains("announce")));
             commands.Add(new Command("config", "config - shows all what is set on your settings", Config, config.GetModCommands.Contains("config")));
             commands.Add(new Command("online", "online - display list of players online with their steamIDs", Online, config.GetModCommands.Contains("online")));
             commands.Add(new Command("ip", "ip - show server ip", IpAddress, config.GetModCommands.Contains("ip")));
@@ -58,6 +60,8 @@ namespace ValheimBetterServerConfig
             commands.Add(new Command("removeMod", "removemod [name/steamID] - remove user from moderator list", RemoveMod, config.GetModCommands.Contains("removemod")));
             commands.Add(new Command("mods", "mods - print moderator player list in server console", PrintMods, config.GetModCommands.Contains("mods")));
             commands.Add(new Command("modCommands", "modCommands - list of commands available to moderators", PrintModCommands, config.GetModCommands.Contains("modcommands")));
+
+            commands.Sort((x, y) => x.Key.CompareTo(y.Key));
         }
 
         public void RunCommand(string text, bool calledFromClient)
@@ -76,6 +80,7 @@ namespace ValheimBetterServerConfig
                             bool finished = command.Run((string[])args.Clone());
                             if (finished)
                             {
+                                //Command finished successfuly
                                 return;
                             }
                             else
@@ -83,6 +88,7 @@ namespace ValheimBetterServerConfig
                                 if (!args[0].IsNullOrWhiteSpace())
                                 {
                                     Print(command.Hint);
+
                                     return;
                                 }
                                 Print($"Something went wrong with args[0]: {args[0]}");
