@@ -52,7 +52,6 @@ namespace ValheimBetterServerConfig
                             Console.Utils.Print($"Please don't use {input} as its causing error," +
                                 $" please report it on https://github.com/LTmadness/ValheimBetterServerConfig, please include input command used");
                         }
-                        
                     }
                 }
             });

@@ -10,6 +10,7 @@ namespace ValheimBetterServerConfig.Console
         public static string RebuildString(string[] args)
         {
             args[0] = "";
+
             return String.Join(" ", args).Trim();
         }
 
@@ -34,8 +35,10 @@ namespace ValheimBetterServerConfig.Console
             if (args.Length <= 1 || args[1].IsNullOrWhiteSpace())
             {
                 Print("No or incorrect user supplied");
+
                 return false;
             }
+
             return true;
         }
 
@@ -43,8 +46,6 @@ namespace ValheimBetterServerConfig.Console
         {
             if (!announcement.IsNullOrWhiteSpace())
             {
-                string username = Runner.Instance.config.Username;
-                ZRoutedRpc.instance.InvokeRoutedRPC(ZRoutedRpc.Everybody, "ChatMessage", new object[] { new Vector3(), 2, username, announcement });
                 MessageHud.instance.MessageAll(type, announcement);
                 Logger.Logger.Instance.addLog($"{type} annoucment: {announcement}", LoggerType.Chat, LoggerLevel.Info);
             }

@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ValheimBetterServerConfig.Logger;
@@ -8,7 +9,7 @@ namespace ValheimBetterServerConfig
 {
     class ConfigTool
     {
-        private const string DEFAULT_SETTINGS = "Default settings";
+        private const string GENERAL_SETTINGS = "General settings";
         private const string ADVANCED_SETTINGS = "Advanced settings";
         private const string CONSOLE_SETTINGS = "Console settings";
         private const string LOGGER_SETTINGS = "Logger settings";
@@ -64,14 +65,14 @@ namespace ValheimBetterServerConfig
         public void LoadConfig()
         {
             //default settings
-            serverName = Helper.GetValidServerName(config.Bind<string>(DEFAULT_SETTINGS, "Server Name", "My Server Name", "Server name, please change, if deleted will say \"Server Name\", if you want tou can use multiple colors example: \n " +
-                                                                                                                             "<color=RED>Server</color><color=BLUE>Name</color>, or you can do same <i>italc</i> or  <b>bold</b>,\n" +
+            serverName = Helper.GetValidServerName(config.Bind<string>(GENERAL_SETTINGS, "Server Name", "My Server Name", "Server name, please change, if deleted will say \"Server Name\", if you want tou can use multiple colors example: " + Environment.NewLine +
+                                                                                                                             "<color=RED>Server</color><color=BLUE>Name</color>, or you can do same <i>italc</i> or  <b>bold</b>," + Environment.NewLine +
                                                                                                                              " it doesn't work in steam server browser, also you can find more color names here: https://www.w3schools.com/colors/colors_names.asp"));
-            serverPort = config.Bind<int>(DEFAULT_SETTINGS, "Server Port", 2456);
-            worldName = config.Bind<string>(DEFAULT_SETTINGS, "World Name", "ServerWorld");
-            password = config.Bind<string>(DEFAULT_SETTINGS, "Server password", "changeMe", "server password, please change");
-            saveLocation = config.Bind<string>(DEFAULT_SETTINGS, "Save location", "", "Server data save location");
-            visable = config.Bind<bool>(DEFAULT_SETTINGS, "Publicly visable:", true, "Will server be publicly visable in server list");
+            serverPort = config.Bind<int>(GENERAL_SETTINGS, "Server Port", 2456);
+            worldName = config.Bind<string>(GENERAL_SETTINGS, "World Name", "ServerWorld");
+            password = config.Bind<string>(GENERAL_SETTINGS, "Server password", "changeMe", "server password, please change");
+            saveLocation = config.Bind<string>(GENERAL_SETTINGS, "Save location", "", "Server data save location");
+            visable = config.Bind<bool>(GENERAL_SETTINGS, "Publicly visable:", true, "Will server be publicly visable in server list");
 
             //advanced settings
             serverSize = config.Bind<int>(ADVANCED_SETTINGS, "Server size", 10, "Number of players allowed in the server, minimum 1, only works on steam browser so far");
@@ -88,7 +89,7 @@ namespace ValheimBetterServerConfig
             showChatYell = config.Bind<bool>(CONSOLE_SETTINGS, "Show shout chat", true, "Show what eveyone shouts (/s) in console");
             showChatAll = config.Bind<bool>(CONSOLE_SETTINGS, "Show chat", true, "Show all chat in console, overwrites show chat shout option");
             modCommandsList = config.Bind<string>(CONSOLE_SETTINGS, "Commands Allowed for Mods", "kick,say,save,sleep" , "List of commands allowed to use by mods").Value.ToLower().Split(',').ToList();
-            helpPageSize = config.Bind<int>(CONSOLE_SETTINGS, "Help Page Size", 10, "THe size opf page when using help");
+            helpPageSize = config.Bind<int>(CONSOLE_SETTINGS, "Help Page Size", 10, "The size opf page when using help");
 
             //Logger settings
             loggerLevel = config.Bind<LoggerLevel>(LOGGER_SETTINGS, "Logging level", LoggerLevel.Info, "Lowest level of logs to be recored to file (Info, Debug, Error)");

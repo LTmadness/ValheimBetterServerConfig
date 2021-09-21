@@ -28,6 +28,7 @@ namespace ValheimBetterServerConfig.Logger
             instance = this;
             loggerLocation = saveLocation + "/logs/";
             levelSetting = loggerSetting;
+            //Make sure location excist no point of logging if we can't save it
             Directory.CreateDirectory(loggerLocation);
         }
 
@@ -46,7 +47,6 @@ namespace ValheimBetterServerConfig.Logger
                         file.WriteLine($"[{level}][{now.ToShortTimeString()}]{message}");
                     }
                 }
-                
             }
         }
     }

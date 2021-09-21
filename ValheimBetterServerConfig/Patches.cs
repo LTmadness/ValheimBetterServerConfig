@@ -42,6 +42,7 @@ namespace ValheimBetterServerConfig
                 Application.Quit();
 
                 __result = false;
+
                 return false;
             }
 
@@ -53,6 +54,7 @@ namespace ValheimBetterServerConfig
             SteamManager.SetServerPort(config.ServerPort);
 
             __result = true;
+
             return false;
         }
 
@@ -62,6 +64,7 @@ namespace ValheimBetterServerConfig
         {
 
             __result = Helper.IsPasswordValid(password, world, config.ServerName);
+
             return false;
         }
 
@@ -83,6 +86,7 @@ namespace ValheimBetterServerConfig
             AccessTools.Field(typeof(ZSteamMatchmaking), "m_registerPassword").SetValue(__instance, password);
             AccessTools.Field(typeof(ZSteamMatchmaking), "m_registerVerson").SetValue(__instance, version);
             Console.Utils.Print("Registering lobby (modded)", LoggerType.Patch);
+
             return false;
         }
 
@@ -119,6 +123,7 @@ namespace ValheimBetterServerConfig
                 catch
                 {
                     Console.Utils.Print("Nothing to back up yet", LoggerType.Patch, LoggerLevel.Error);
+
                     return;
                 }
 
@@ -210,21 +215,26 @@ namespace ValheimBetterServerConfig
         [HarmonyPrefix]
         public static bool OnStatusChanged(SteamNetConnectionStatusChangedCallback_t data, ZSteamSocket __instance)
         {
+
             Console.Utils.Print(("Got status changed msg " + data.m_info.m_eState), LoggerType.Patch, LoggerLevel.Info);
             if (data.m_info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected && data.m_eOldState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connecting)
             {
                 Console.Utils.Print("Connected " + data.m_hConn.m_HSteamNetConnection, LoggerType.Player, LoggerLevel.Debug);
                 ZSteamSocket socket = (ZSteamSocket) AccessTools.Method(typeof(ZSteamSocket), "FindSocket").Invoke(__instance, new object[] { data.m_hConn });
+
                 if (socket != null)
                 {
-                    SteamNetConnectionInfo_t pInfo;
-                    if (SteamGameServerNetworkingSockets.GetConnectionInfo(data.m_hConn, out pInfo))
+                    if (SteamGameServerNetworkingSockets.GetConnectionInfo(data.m_hConn, out SteamNetConnectionInfo_t pInfo))
+                    {
                         AccessTools.Field(typeof(ZSteamSocket), "m_peerID").SetValue(socket, pInfo.m_identityRemote);
+                    }
+
                     SteamNetworkingIdentity peerID = (SteamNetworkingIdentity) AccessTools.Field(typeof(ZSteamSocket), "m_peerID").GetValue(socket);
 
                 Console.Utils.Print("Got connection SteamID " + peerID.GetSteamID().ToString(), LoggerType.Player, LoggerLevel.Debug);
                 }
             }
+
             if (data.m_info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connecting && data.m_eOldState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_None)
             {
                 Console.Utils.Print("New connection " + data.m_hConn.m_HSteamNetConnection, LoggerType.Player, LoggerLevel.Debug);
@@ -234,6 +244,7 @@ namespace ValheimBetterServerConfig
                     AccessTools.Method(typeof(ZSteamSocket), "OnNewConnection").Invoke(socket, new object[] { data.m_hConn });
                 }
             }
+
             if (data.m_info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally)
             {
                 Console.Utils.Print("Got problem " + data.m_info.m_eEndReason + ":" + data.m_info.m_szEndDebug, LoggerType.Patch, LoggerLevel.Debug);
@@ -244,14 +255,24 @@ namespace ValheimBetterServerConfig
                     socket.Close();
                 }
             }
+
             if (data.m_info.m_eState != ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ClosedByPeer)
+            {
                 return false;
+            }
+
             Console.Utils.Print("Socket closed by peer " + data.m_hConn.m_HSteamNetConnection, LoggerType.Player, LoggerLevel.Debug);
             ZSteamSocket socket1 = (ZSteamSocket)AccessTools.Method(typeof(ZSteamSocket), "FindSocket").Invoke(__instance, new object[] { data.m_hConn });
+
             if (socket1 == null)
+            {
                 return false;
+            }
+              
+
             Console.Utils.Print("Closing socket " + socket1.GetHostName(), LoggerType.Player, LoggerLevel.Debug);
             socket1.Close();
+
             return false;
         }
 

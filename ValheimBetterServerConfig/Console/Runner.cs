@@ -80,6 +80,7 @@ namespace ValheimBetterServerConfig
                             bool finished = command.Run((string[])args.Clone());
                             if (finished)
                             {
+                                //Command finished successfuly
                                 return;
                             }
                             else
@@ -87,6 +88,7 @@ namespace ValheimBetterServerConfig
                                 if (!args[0].IsNullOrWhiteSpace())
                                 {
                                     Print(command.Hint);
+
                                     return;
                                 }
                                 Print($"Something went wrong with args[0]: {args[0]}");

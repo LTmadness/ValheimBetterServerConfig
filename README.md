@@ -87,8 +87,3 @@ Enabled = false
 	* Show shout chat - when enables console displays shouts (/s messages) in console
 - Small fixes and optimisations
 
-##### v0.0.70
-- New command system
-- Fix for Shutdown command
-- Fix for visible setting
-

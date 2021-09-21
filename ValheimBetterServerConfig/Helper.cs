@@ -28,9 +28,12 @@ namespace ValheimBetterServerConfig
             foreach (ZNetPeer peer in (List<ZNetPeer>) AccessTools.Field(typeof(ZNet), "m_peers").GetValue(ZNet.instance))
             {
                 if (peer.IsReady() && peer.m_playerName.ToLower().Equals(name.ToLower()))
+                {
                     return peer;
+                }
             }
-            return (ZNetPeer)null;
+
+            return null;
         }
 
         public static ConfigEntry<string> GetValidServerName(ConfigEntry<string> serverName)
@@ -39,6 +42,7 @@ namespace ValheimBetterServerConfig
             {
                 serverName.Value = "Server Name";
             }
+
             return serverName;
         }
 
