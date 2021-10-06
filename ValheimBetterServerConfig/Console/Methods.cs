@@ -15,8 +15,9 @@ namespace ValheimBetterServerConfig.Console
         public static bool Help(string[] args)
         {
             Runner runner = Runner.Instance;
-            int page = 1;
-            if (args.Length > 1) { 
+            int page = 0;
+            if (args.Length > 1) 
+            { 
                 page = int.Parse(args[1]);
                 if (args.Length > 2)
                 {
@@ -26,25 +27,25 @@ namespace ValheimBetterServerConfig.Console
                     ArgumentSkipped(skipped);
                 }
             }
-            int totalPages = (int) Math.Ceiling((double) (runner.commands.Count / runner.config.HelpPageSize));
-            if (page > 0 && page <= totalPages)
+            int commandsCount = runner.commands.Count;
+            int totalPages = (int) Math.Ceiling((double) (commandsCount / runner.config.HelpPageSize));
+            if (commandsCount % runner.config.HelpPageSize == 0)
             {
-                int pageStart = (page * runner.config.HelpPageSize) - 1;
-                int pageEnd = runner.config.HelpPageSize;
-                if (pageStart + runner.config.HelpPageSize > runner.commands.Count)
-                {
-                    pageEnd = runner.commands.Count - pageStart;
-                }
-                List<Command> pageCommands = runner.commands.GetRange(pageStart, pageEnd);
-                Print($"Available commands page {page}");
+                totalPages--;
+            }
+            if (page >= 0 && page <= totalPages)
+            {
+                int pageStart = page * runner.config.HelpPageSize;
+                List<Command> pageCommands = runner.commands.GetRange(pageStart, runner.config.HelpPageSize);
                 foreach (Command command in pageCommands)
                 {
                     Print(command.Hint);
                 }
-
-            } else
+                Print($"Available commands page {page}/{totalPages}");
+            } 
+            else
             {
-                Print($"Please select page from range: 1 - {totalPages}");
+                Print($"Please select page from range: 0 - {totalPages}");
 
                 return false;
             }
