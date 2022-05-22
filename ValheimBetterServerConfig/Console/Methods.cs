@@ -6,7 +6,6 @@ using static ValheimBetterServerConfig.Console.Utils;
 using static Utils;
 using static ValheimBetterServerConfig.ValheimBetterServerConfig;
 using ValheimBetterServerConfig.Logger;
-using System.Diagnostics;
 
 namespace ValheimBetterServerConfig.Console
 {

@@ -9,7 +9,7 @@ namespace ValheimBetterServerConfig
 {
     class Helper
     {
-        private static readonly string colorRegex = "<color=.*?>|<\\/color>";
+        private static readonly Regex colorRegex = new Regex("<color=.*?>|<\\/color>");
 
         public static bool IsPasswordValid(String password, World world, string serverName)
         {
@@ -48,7 +48,7 @@ namespace ValheimBetterServerConfig
 
         public static bool HasColor(string text)
         {
-            return Regex.IsMatch(text, colorRegex);
+            return colorRegex.IsMatch(text);
         }
 
         public static string SetColor(string text, string color)

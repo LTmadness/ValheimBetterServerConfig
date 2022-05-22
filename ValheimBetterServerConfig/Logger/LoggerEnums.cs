@@ -1,5 +1,4 @@
-﻿
-namespace ValheimBetterServerConfig.Logger
+﻿namespace ValheimBetterServerConfig.Logger
 {
     public enum LoggerType
     {

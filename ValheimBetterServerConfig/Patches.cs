@@ -127,10 +127,13 @@ namespace ValheimBetterServerConfig
                     return;
                 }
 
-                List<FileInfo> files = new DirectoryInfo(backupDirectory).EnumerateFiles()
-                                                                         .OrderByDescending(f => f.CreationTime)
-                                                                         .Skip(numberOfBackups)
-                                                                         .ToList();
+                List<FileInfo> files = 
+                    new DirectoryInfo(backupDirectory)
+                                .EnumerateFiles()
+                                .OrderByDescending(f => f.CreationTime)
+                                .Skip(numberOfBackups)
+                                .ToList();
+                
                 files.ForEach(f => f.Delete());
             }
         }
@@ -275,6 +278,5 @@ namespace ValheimBetterServerConfig
 
             return false;
         }
-
     }
 }

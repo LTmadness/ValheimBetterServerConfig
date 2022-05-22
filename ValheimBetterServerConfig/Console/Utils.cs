@@ -1,6 +1,5 @@
 ﻿using BepInEx;
 using System;
-using UnityEngine;
 using ValheimBetterServerConfig.Logger;
 
 namespace ValheimBetterServerConfig.Console
