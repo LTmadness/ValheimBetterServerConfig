@@ -32,7 +32,7 @@ namespace ValheimBetterServerConfig
                 Utils.SetSaveDataPath(location);
             }
 
-            World createWorld = World.GetCreateWorld(config.WorldName);
+            World createWorld = World.GetCreateWorld(config.WorldName, FileHelpers.FileSource.Local);
 
             string serverName = config.ServerName;
             string password = config.Password;
@@ -104,7 +104,7 @@ namespace ValheimBetterServerConfig
             {
                 string timeNow = (DateTime.Now.ToShortDateString().Replace("/", "-") + "-" + DateTime.Now.ToShortTimeString().Replace(":", "-")).Replace(" ", "");
                 string worldName = config.WorldName;
-                string worldLocation = Utils.GetSaveDataPath() + "/worlds";
+                string worldLocation = Utils.GetSaveDataPath(FileHelpers.FileSource.Local) + "/worlds";
                 string backupDirectory = worldLocation + "/" + worldName;
                 // if doesn't exist create new backup store location
                 Directory.CreateDirectory(backupDirectory);

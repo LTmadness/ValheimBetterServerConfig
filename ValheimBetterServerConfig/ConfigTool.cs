@@ -118,7 +118,7 @@ namespace ValheimBetterServerConfig
 
         public void PostInisilisation()
         {
-            modList = new SyncedList(Utils.GetSaveDataPath() + "/modlist.txt", "List moderator players ID  ONE per line");
+            modList = new SyncedList(Utils.GetSaveDataPath(FileHelpers.FileSource.Local) + "/modlist.txt", "List moderator players ID  ONE per line");
         }
 
         public string ServerName { get => name; }

@@ -256,12 +256,12 @@ namespace ValheimBetterServerConfig.Console
             ArgumentSkipped(args);
             ZNet zNet = ZNet.instance;
             AccessTools.Field(typeof(ZNet), "m_adminList")
-                       .SetValue(zNet, new SyncedList(GetSaveDataPath() + "/adminlist.txt", "List admin players ID  ONE per line"));
+                       .SetValue(zNet, new SyncedList(GetSaveDataPath(FileHelpers.FileSource.Local) + "/adminlist.txt", "List admin players ID  ONE per line"));
             AccessTools.Field(typeof(ZNet), "m_bannedList")
-                       .SetValue(zNet, new SyncedList(GetSaveDataPath() + "/bannedlist.txt", "List banned players ID  ONE per line"));
+                       .SetValue(zNet, new SyncedList(GetSaveDataPath(FileHelpers.FileSource.Local) + "/bannedlist.txt", "List banned players ID  ONE per line"));
             AccessTools.Field(typeof(ZNet), "m_permittedList")
-                       .SetValue(zNet, new SyncedList(GetSaveDataPath() + "/permittedlist.txt", "List permitted players ID ONE per line"));
-            Patches.config.modList = new SyncedList(GetSaveDataPath() + "/permittedlist.txt", "List permitted players ID ONE per line");
+                       .SetValue(zNet, new SyncedList(GetSaveDataPath(FileHelpers.FileSource.Local) + "/permittedlist.txt", "List permitted players ID ONE per line"));
+            Patches.config.modList = new SyncedList(GetSaveDataPath(FileHelpers.FileSource.Local) + "/permittedlist.txt", "List permitted players ID ONE per line");
             Print("Lists refreshed");
 
             return true;
